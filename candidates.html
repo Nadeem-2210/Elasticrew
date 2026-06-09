@@ -6,49 +6,67 @@
     <title>Elasticrew - Candidate Management</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* --- RIGID COMPACT INVITE MODAL SIZING --- */
+        /* --- ENHANCED & WIDENED COMFORTABLE MODAL FOOTPRINT --- */
         .email-modal-card {
-            max-width: 460px !important;
+            max-width: 640px !important; /* Expanded width footprint */
             width: 90% !important;
-            max-height: 85vh !important;
+            max-height: 90vh !important; /* Balanced window viewport bounding box */
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            padding: 18px 20px !important;
+            overflow-y: auto; /* Restricts dual scrollbars entirely */
+            padding: 24px 28px !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
         .modal-scrollable-form {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding-right: 4px;
-            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px; /* Uniform linear flow spacing grid */
+            margin-top: 14px;
         }
 
         .form-group {
-            margin-bottom: 12px !important;
+            margin-bottom: 0 !important; /* Controlled via structural flex gaps */
         }
 
         .form-group label {
-            margin-bottom: 4px !important;
-            font-size: 12px !important;
+            margin-bottom: 6px !important;
+            font-size: 12.5px !important;
+            font-weight: 600;
+            color: #334155;
         }
 
         .form-control {
-            padding: 6px 10px !important;
+            padding: 8px 12px !important;
             font-size: 13px !important;
             height: auto !important;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .textarea-body {
-            height: 100px !important;
+            height: 110px !important;
             resize: none;
         }
 
+        .textarea-remarks {
+            height: 70px !important;
+            resize: none;
+            background-color: #fafafa;
+        }
+        .textarea-remarks:focus {
+            background-color: #ffffff;
+        }
+
         .modal-actions {
-            margin-top: 14px !important;
-            padding-top: 10px;
+            margin-top: 8px !important;
+            padding-top: 14px;
             border-top: 1px solid #f1f5f9;
-            flex-shrink: 0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
         }
 
         /* --- STATUS DROP-DOWN PILL STYLES --- */
@@ -200,7 +218,7 @@
                     </tr>
                 </thead>
                 <tbody id="candidateListBody">
-                    <tr class="candidate-row" data-name="Achyut Pancholi" data-dept="Engineering" data-subdept="Full Stack" data-stage="Video Screening Completed" data-status="Active">
+                    <tr class="candidate-row" data-name="Achyut Pancholi" data-dept="Engineering" data-subdept="Full Stack" data-stage="Video Screening Completed" data-status="Active" data-remarks="">
                         <td><span class="timestamp-txt">2026-06-08</span></td>
                         <td><strong>Achyut Pancholi</strong></td>
                         <td>Full Stack</td>
@@ -271,10 +289,10 @@
         </div>
     </div>
 
-    <!-- MODAL 2: COMPACT EMAIL INVITATION MODAL -->
+    <!-- MODAL 2: WIDENED SINGLE-SCROLL EMAIL INVITATION MODAL WITH REMARKS -->
     <div class="modal-overlay" id="emailModalOverlay">
         <div class="modal-card email-modal-card">
-            <h2 class="modal-header" style="margin:0; padding-bottom:8px; border-bottom:1px solid #f1f5f9; font-size:16px;">Video Bot Invitation</h2>
+            <h2 class="modal-header" style="margin:0; padding-bottom:10px; border-bottom:1px solid #e2e8f0; font-size:16px;">Video Bot AI screening Invitation</h2>
             
             <form id="emailInviteForm" class="modal-scrollable-form">
                 <div class="form-group">
@@ -288,7 +306,7 @@
 
                 <!-- INTEGRATION ENGINE: DROPDOWN PICKER -->
                 <div class="form-group">
-                    <label for="inviteQuestionSetSelect">Select Question Set</label>
+                    <label for="inviteQuestionSetSelect">Select Target Question Set</label>
                     <select id="inviteQuestionSetSelect" class="form-control" required onchange="updateInviteQuestionSetTicker()">
                         <!-- Dynamic options injected here -->
                     </select>
@@ -302,10 +320,16 @@
                     <label for="emailBody">Email Message Body</label>
                     <textarea id="emailBody" class="form-control textarea-body" required></textarea>
                 </div>
+
+                <!-- NEW COMPONENT: ADMINISTRATIVE ACTION REMARKS INPUT -->
+                <div class="form-group">
+                    <label for="emailRemarks">Administrative Candidate Remarks</label>
+                    <textarea id="emailRemarks" class="form-control textarea-remarks" placeholder="Type internal notes, context, or screening considerations for this candidate profile..."></textarea>
+                </div>
                 
-                <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:8px;">
-                    <button type="button" class="btn-secondary" id="closeEmailModalBtn" style="padding:6px 12px; font-size:12px;">Cancel</button>
-                    <button type="submit" class="btn-submit dispatch-btn" style="padding:6px 12px; font-size:12px;">Send Invite</button>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="closeEmailModalBtn" style="padding:6px 14px; font-size:12px;">Cancel</button>
+                    <button type="submit" class="btn-submit dispatch-btn" style="padding:6px 14px; font-size:12px;">Send Invite</button>
                 </div>
             </form>
         </div>
@@ -326,6 +350,7 @@
         const emailInviteForm = document.getElementById('emailInviteForm');
         const candidateEmailInput = document.getElementById('candidateEmail');
         const emailBodyTextArea = document.getElementById('emailBody');
+        const emailRemarksTextArea = document.getElementById('emailRemarks');
         const inviteQuestionSetSelect = document.getElementById('inviteQuestionSetSelect');
 
         const searchName = document.getElementById('searchName');
@@ -333,6 +358,9 @@
         const filterSubDept = document.getElementById('filterSubDept');
         const filterStage = document.getElementById('filterStage');
         const filterStatus = document.getElementById('filterStatus');
+
+        let currentIdCounter = 2;
+        let activeRowForEmail = null;
 
         const baselineFallbackDatabase = {
             "Operations|HR|Fresher(0)": ["Question 1", "Question 2", "Question 3", "Question 4", "Question 5"],
@@ -459,6 +487,11 @@
                 const count = selectedOpt.getAttribute('data-count');
                 const candName = activeRowForEmail ? activeRowForEmail.getAttribute('data-name') : "Candidate";
                 emailBodyTextArea.value = `Hi ${candName},\n\nPlease complete your Video AI Screening assessment configured for the ${selectedOpt.text}.\n\nThis workflow features exactly ${count} targeted question blocks. Complete it using the secure link inside your tracking workspace.\n\nBest regards,\nElastiCrew Management`;
+                
+                // Fetch and populate existing candidate context remarks if previously saved
+                if (activeRowForEmail) {
+                    emailRemarksTextArea.value = activeRowForEmail.getAttribute('data-remarks') || "";
+                }
             }
         }
 
@@ -502,9 +535,14 @@
             e.preventDefault();
             if (activeRowForEmail) {
                 const selectedOpt = inviteQuestionSetSelect.options[inviteQuestionSetSelect.selectedIndex];
+                const remarksValue = emailRemarksTextArea.value.trim();
+                
+                // Sync form notes context seamlessly back into row attribute structures
+                activeRowForEmail.setAttribute('data-remarks', remarksValue);
                 activeRowForEmail.setAttribute('data-stage', 'Video Screening Pending');
-                activeRowForEmail.cells[3].innerHTML = `<span class="stage-tag interviewing">Video Screening Pending</span>`;
-                alert(`Video Bot Invite Dispatched Successfully!\nQuestion Set Matrix Attached: ${selectedOpt.text}`);
+                
+                activeRowForEmail.cells[3].innerHTML = `<span class="stage-tag screening">Video Screening Pending</span>`;
+                alert(`Video Bot Invite Dispatched Successfully!\nQuestion Set Matrix Attached: ${selectedOpt.text}\nRemarks cached safely.`);
                 toggleEmailModal(false);
                 filterCandidates();
             }
@@ -522,7 +560,6 @@
             const computedName = cleanNameFromFilename(resumeFile.name);
             const defaultStage = 'Video Screening Pending';
 
-            // Fixed ISO Date generation (stripping time elements)
             const now = new Date();
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -536,6 +573,7 @@
             newRow.setAttribute('data-subdept', subDept); 
             newRow.setAttribute('data-stage', defaultStage);
             newRow.setAttribute('data-status', 'Active');
+            newRow.setAttribute('data-remarks', '');
 
             newRow.innerHTML = `
                 <td><span class="timestamp-txt">${currentTimestamp}</span></td>
