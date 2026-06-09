@@ -40,10 +40,10 @@
         /* --- IMMUTABLE STABLE ASPECT-RATIO VIDEO VIEWPORT --- */
         .locked-video-viewport {
             width: 100%;
-            aspect-ratio: 16 / 9; /* Enforces absolute size geometry across all question pathways */
+            aspect-ratio: 16 / 9;
             background: #000000;
             border-radius: 6px;
-            object-fit: cover; /* Stops frame expansion regardless of varying video metadata footprints */
+            object-fit: cover;
             display: block;
         }
 
@@ -170,6 +170,7 @@
 </head>
 <body>
 
+    <!-- SIDEBAR MENU -->
     <nav class="sidebar">
         <div class="sidebar-header"><h1 class="sidebar-brand">ElastiCrew</h1></div>
         <ul class="nav-menu">
@@ -183,12 +184,14 @@
         <div class="logout-container"><a href="#" class="logout-link"><span>Logout</span></a></div>
     </nav>
 
+    <!-- MAIN FRAME CONTENT AREA -->
     <main class="main-content">
         <header class="header-actions">
             <h1 class="page-title">Video Bot AI Screening</h1>
         </header>
 
         <section class="candidates-section">
+            <!-- FILTER AND SEARCH BAR SYSTEM -->
             <div class="filter-bar">
                 <div class="search-box">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -243,6 +246,7 @@
                 </a>
             </div>
 
+            <!-- PIPELINE DATA GRID WITH CUSTOM DATE FORMAT UPDATED -->
             <table class="candidate-table" id="screeningTable" style="table-layout: fixed; width: 100%;">
                 <thead>
                     <tr>
@@ -259,7 +263,7 @@
                     <tr class="candidate-row" data-name="Alan Turing" data-dept="Engineering" data-subdept="Backend" data-status="Pending" data-remarks="">
                         <td class="grid-layout-td col-name"><strong>Alan Turing</strong></td>
                         <td class="grid-layout-td col-dept">Backend</td>
-                        <td class="grid-layout-td col-invited"><span class="timestamp-txt">2026-06-01</span></td>
+                        <td class="grid-layout-td col-invited"><span class="timestamp-txt">01 Jun 26</span></td>
                         <td class="grid-layout-td col-completed"><span class="timestamp-txt">—</span></td>
                         <td class="grid-layout-td col-status"><span class="stage-tag screening">Pending</span></td>
                         <td class="grid-layout-td col-action">
@@ -270,26 +274,26 @@
                             </select>
                         </td>
                         <td class="grid-layout-td col-remarks" style="padding-right: 24px;">
-                            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; color:#475569; border-color:#cbd5e1;" onclick="triggerRemarksModal('Alan Turing')">View/Edit Remarks</button>
+                            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; color:#475569; border-color:#cbd5e1;" onclick="triggerRemarksModal('Alan Turing')">View/Edit Notes</button>
                         </td>
                     </tr>
                     <tr class="candidate-row" data-name="Grace Hopper" data-dept="Engineering" data-subdept="Full Stack" data-status="Completed" data-remarks="Strong vocabulary index, clear structural responses across text sync pools.">
                         <td class="grid-layout-td col-name"><strong>Grace Hopper</strong></td>
                         <td class="grid-layout-td col-dept">Full Stack</td>
-                        <td class="grid-layout-td col-invited"><span class="timestamp-txt">2026-05-28</span></td>
-                        <td class="grid-layout-td col-completed"><span class="timestamp-txt">2026-05-30</span></td>
+                        <td class="grid-layout-td col-invited"><span class="timestamp-txt">28 May 26</span></td>
+                        <td class="grid-layout-td col-completed"><span class="timestamp-txt">30 May 26</span></td>
                         <td class="grid-layout-td col-status"><span class="stage-tag offered">Completed</span></td>
                         <td class="grid-layout-td col-action">
                             <button class="btn-submit" style="background:#7c3aed; padding: 4px 8px; font-size:11px;" onclick="launchRecordingPlayerModal('Grace Hopper')">View Recording</button>
                         </td>
                         <td class="grid-layout-td col-remarks" style="padding-right: 24px;">
-                            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; color:#475569; border-color:#cbd5e1;" onclick="triggerRemarksModal('Grace Hopper')">View/Edit Remarks</button>
+                            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; color:#475569; border-color:#cbd5e1;" onclick="triggerRemarksModal('Grace Hopper')">View/Edit Notes</button>
                         </td>
                     </tr>
                     <tr class="candidate-row" data-name="Ada Lovelace" data-dept="Engineering" data-subdept="Frontend" data-status="Expired" data-remarks="">
                         <td class="grid-layout-td col-name"><strong>Ada Lovelace</strong></td>
                         <td class="grid-layout-td col-dept">Frontend</td>
-                        <td class="grid-layout-td col-invited"><span class="timestamp-txt">2026-05-15</span></td>
+                        <td class="grid-layout-td col-invited"><span class="timestamp-txt">15 May 26</span></td>
                         <td class="grid-layout-td col-completed"><span class="timestamp-txt">—</span></td>
                         <td class="grid-layout-td col-status"><span class="stage-tag rejected">Link Expired</span></td>
                         <td class="grid-layout-td col-action">
@@ -300,13 +304,13 @@
                             </select>
                         </td>
                         <td class="grid-layout-td col-remarks" style="padding-right: 24px;">
-                            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; color:#475569; border-color:#cbd5e1;" onclick="triggerRemarksModal('Ada Lovelace')">View/Edit Remarks</button>
+                            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; color:#475569; border-color:#cbd5e1;" onclick="triggerRemarksModal('Ada Lovelace')">View/Edit Notes</button>
                         </td>
                     </tr>
                     <tr class="candidate-row" data-name="Linus Torvalds" data-dept="Engineering" data-subdept="Backend" data-status="Cancelled" data-remarks="">
                         <td class="grid-layout-td col-name"><strong>Linus Torvalds</strong></td>
                         <td class="grid-layout-td col-dept">Backend</td>
-                        <td class="grid-layout-td col-invited"><span class="timestamp-txt">2026-05-20</span></td>
+                        <td class="grid-layout-td col-invited"><span class="timestamp-txt">20 May 26</span></td>
                         <td class="grid-layout-td col-completed"><span class="timestamp-txt">—</span></td>
                         <td class="grid-layout-td col-status"><span class="stage-tag profiling-cancelled">Could not complete</span></td>
                         <td class="grid-layout-td col-action">
@@ -317,7 +321,7 @@
                             </select>
                         </td>
                         <td class="grid-layout-td col-remarks" style="padding-right: 24px;">
-                            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; color:#475569; border-color:#cbd5e1;" onclick="triggerRemarksModal('Linus Torvalds')">View/Edit Remarks</button>
+                            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; color:#475569; border-color:#cbd5e1;" onclick="triggerRemarksModal('Linus Torvalds')">View/Edit Notes</button>
                         </td>
                     </tr>
                 </tbody>
@@ -326,6 +330,7 @@
         </section>
     </main>
 
+    <!-- --- INVITE RESHARE OVERLAY MODAL --- -->
     <div class="modal-overlay" id="emailModalOverlay">
         <div class="modal-card email-modal-card" style="max-width:460px; width:90%;">
             <h2 class="modal-header" style="font-size:16px;">Reshare Video Screening Link</h2>
@@ -354,9 +359,11 @@
         </div>
     </div>
 
+    <!-- --- CONSTRAINED WORKSPACE TERMINAL BACKDROP (60% VIEWPORT COVERAGE) --- -->
     <div class="recording-popup-backdrop" id="recordingPlayerModal" onclick="closePopupOnBackdrop(event, 'recordingPlayerModal')">
         <div class="premium-60-modal">
             
+            <!-- Left Side Panel: Media Box Streaming -->
             <div class="modal-left-media">
                 <div style="flex-grow:1; display:flex; align-items:center; justify-content:center; min-height:0;">
                     <video id="modalMainVideoBox" controls class="locked-video-viewport">
@@ -364,6 +371,7 @@
                     </video>
                 </div>
                 
+                <!-- Flat Numeric Question Navigation Strip -->
                 <div class="modal-q-nav-strip">
                     <div class="modal-q-node active-q" onclick="jumpToTargetQuestionIndex(1, 'https://www.w3schools.com/html/mov_bbb.mp4')">Q1</div>
                     <div class="modal-q-node" onclick="jumpToTargetQuestionIndex(2, 'https://www.w3schools.com/html/movie.mp4')">Q2</div>
@@ -376,6 +384,7 @@
                 </div>
             </div>
 
+            <!-- Right Side Panel: Text Sync Transcript Logs -->
             <div class="modal-right-data">
                 <div class="flex-between" style="border-bottom:1px solid #e2e8f0; padding-bottom:8px; flex-shrink:0;">
                     <div>
@@ -397,6 +406,7 @@
         </div>
     </div>
 
+    <!-- --- POPUP OVERLAY C: CONSTRAINED ADMINISTRATIVE REMARKS MODAL LAYER --- -->
     <div class="recording-popup-backdrop" id="remarksModalOverlay" onclick="closePopupOnBackdrop(event, 'remarksModalOverlay')">
         <div class="modal-card remarks-popup-card">
             <div class="flex-between" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
@@ -413,6 +423,7 @@
         </div>
     </div>
 
+    <!-- CODE INTERACTION ENGINE LOGIC -->
     <script>
         const qaScriptMatrix = {
             1: { q: "Walk us through your experience building decoupled microservices architectures?", a: "I leverage decoupled container configurations routed natively over proxy handlers to distribute cross-origin data loads securely without bottleneck lags..." },
@@ -468,7 +479,6 @@
             }
         }
 
-        // Handles backdrop modal dismissals safely
         function closePopupOnBackdrop(e, modalId) {
             if (e.target === document.getElementById(modalId)) {
                 if(modalId === 'recordingPlayerModal') toggleRecordingModal();
@@ -476,7 +486,6 @@
             }
         }
 
-        // Remarks popup launch configuration lifecycle
         function triggerRemarksModal(candidateName) {
             const rows = document.getElementsByClassName('candidate-row');
             for(let row of rows) {
