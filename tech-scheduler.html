@@ -3,104 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elasticrew - Tech Scheduler</title>
+    <title>Elasticrew - Technical Interview Scheduler</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* --- HIGH GRAPHIC VERTICAL GRID SIZING SPECIFICATIONS --- */
+        /* --- STAKEHOLDER DEMO VERTICAL LINES ENGINE --- */
         .grid-layout-th, .grid-layout-td {
             padding: 14px 16px;
             text-align: left;
             vertical-align: middle;
         }
-        .col-cand { width: 25%; }
-        .col-panel { width: 25%; }
-        .col-time { width: 25%; }
-        .col-assets { width: 15%; }
-        .col-manage { width: 10%; text-align: right; }
+        .col-cand { width: 22%; }
+        .col-panel { width: 22%; }
+        .col-combined-time-assets { width: 32%; }
+        .col-status { width: 10%; }
+        .col-book { width: 8%; text-align: center; }
+        .col-manage { width: 6%; text-align: right; }
 
-        /* --- PANELLIST ROSTER CHIP STYLES --- */
-        .panel-directory-card {
-            background: #ffffff;
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        .candidate-table td strong {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
         }
-        .directory-header {
+
+        /* --- BUTTON STYLE DEPARTMENT SELECTOR CHIPS --- */
+        .dept-button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .dept-btn-card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 12px 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.15s ease;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
         }
-        .directory-title {
-            font-size: var(--font-size-section);
-            font-weight: 600;
-            color: var(--text-dark);
+        .dept-btn-card:hover {
+            border-color: #2563eb;
+            background: #f8fafc;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
-        .chip-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+        .dept-btn-card.active {
+            background: #eff6ff;
+            border-color: #2563eb;
+            box-shadow: inset 0 0 0 1px #2563eb;
         }
+        .dept-title-txt { font-size: 13px; font-weight: 700; color: #1e293b; }
+        .dept-btn-card.active .dept-title-txt { color: #1d4ed8; }
+        .dept-pill-count { font-size: 11px; background: #f1f5f9; padding: 2px 6px; border-radius: 10px; font-weight: 600; color: #475569; }
+        .dept-btn-card.active .dept-pill-count { background: #3b82f6; color: #ffffff; }
+
+        /* --- DRAWER INTERIOR LAYOUT CONTAINER --- */
+        .panel-directory-drawer {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: none;
+            animation: fadeInDrawer 0.15s ease-out;
+        }
+        @keyframes fadeInDrawer {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chip-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
         .panellist-chip {
             display: inline-flex;
             align-items: center;
-            background-color: #f1f5f9;
+            background-color: #f8fafc;
             color: #334155;
             padding: 6px 12px;
             border-radius: 20px;
-            font-size: var(--font-size-small);
+            font-size: 12px;
             font-weight: 500;
             border: 1px solid #e2e8f0;
         }
-        .remove-chip-btn {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            margin-left: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 700;
-            line-height: 1;
-        }
+        .remove-chip-btn { background: none; border: none; color: #94a3b8; margin-left: 8px; cursor: pointer; font-size: 14px; font-weight: 700; line-height: 1; }
         .remove-chip-btn:hover { color: #b91c1c; }
 
-        /* Multi-selection Checkbox Bounding Box */
-        .checkbox-dropdown-panel {
-            border: 1px solid var(--border-subtle);
-            border-radius: 6px;
-            max-height: 120px;
-            overflow-y: auto;
-            padding: 8px 12px;
-            background-color: #ffffff;
-        }
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 4px 0;
-            font-size: var(--font-size-body);
-            color: var(--text-main);
-            cursor: pointer;
-        }
+        /* --- STAGE BADGE ELEMENT HIGHLIGHTS --- */
+        .stage-tag { display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: 600; border-radius: 12px; text-align: center; white-space: nowrap; }
+        .stage-tag.pending { background-color: #f1f5f9; color: #475569; }
+        .stage-tag.completed { background-color: #dcfce7; color: #15803d; }
+        .stage-tag.cancelled { background-color: #fee2e2; color: #b91c1c; }
 
-        .asset-link-active {
-            color: #7c3aed;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
+        .asset-link-active { color: #7c3aed; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; }
         .asset-link-active:hover { text-decoration: underline; }
-
-        .stacked-panel-wrapper {
-            margin-bottom: 6px;
-        }
-        .stacked-panel-wrapper:last-child {
-            margin-bottom: 0;
-        }
+        .stacked-panel-wrapper { margin-bottom: 4px; }
+        .stacked-panel-wrapper:last-child { margin-bottom: 0; }
+        .timestamp-txt { font-family: monospace; font-size: 12px; color: #1e293b; font-weight: 600; }
+        .checkbox-dropdown-panel { border: 1px solid #cbd5e1; border-radius: 6px; max-height: 120px; overflow-y: auto; padding: 8px 12px; background-color: #ffffff; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; color: #334155; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -108,7 +111,7 @@
     <nav class="sidebar">
         <div class="sidebar-header"><h1 class="sidebar-brand">ElastiCrew</h1></div>
         <ul class="nav-menu">
-             <li class="nav-menu-item active"><a href="candidates.html"><span>Candidates</span></a></li>
+            <li class="nav-menu-item"><a href="candidates.html"><span>Candidates</span></a></li>
             <li class="nav-menu-item"><a href="assessments.html"><span>Assessments</span></a></li>
             <li class="nav-menu-item"><a href="reports.html"><span>Reports</span></a></li>
             <li class="nav-menu-item"><a href="dashboard.html"><span>Dashboard</span></a></li>
@@ -121,21 +124,38 @@
     <main class="main-content">
         <header class="header-actions">
             <h1 class="page-title">Technical Interview Scheduler</h1>
-            <button class="btn-add" id="openScheduleModalBtn">
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
-                Book Technical Session
-            </button>
         </header>
 
-        <div class="panel-directory-card">
-            <div class="directory-header">
-                <h3 class="directory-title">Active Technical Interview Panel</h3>
-                <button class="btn-secondary" style="padding: 6px 12px; font-size: var(--font-size-small);" id="openPanelModalBtn">+ Add Panellist</button>
+        <div class="dept-button-grid" id="deptButtonsContainer">
+            <div class="dept-btn-card" data-dept="Tech and Delivery" onclick="toggleDepartmentDrawer(this)">
+                <span class="dept-title-txt">Tech & Delivery</span><span class="dept-pill-count" id="count-Tech-Delivery">0</span>
             </div>
-            <div class="chip-container" id="panellistChipBox">
-                <div class="panellist-chip" data-name="Alex Rivera" data-designation="SDE-3" data-email="alex.r@elasticrew.com"><span>Gaurav Paliwal (Group Manager)</span><button class="remove-chip-btn" onclick="removePanellistChip(this)">×</button></div>
-                <div class="panellist-chip" data-name="Devon Smith" data-designation="Tech Lead" data-email="devon.s@elasticrew.com"><span>Arpit Pathak (Manager)</span><button class="remove-chip-btn" onclick="removePanellistChip(this)">×</button></div>
+            <div class="dept-btn-card" data-dept="Operations" onclick="toggleDepartmentDrawer(this)">
+                <span class="dept-title-txt">Operations</span><span class="dept-pill-count" id="count-Operations">0</span>
             </div>
+            <div class="dept-btn-card" data-dept="HR" onclick="toggleDepartmentDrawer(this)">
+                <span class="dept-title-txt">HR</span><span class="dept-pill-count" id="count-HR">0</span>
+            </div>
+            <div class="dept-btn-card" data-dept="Finance" onclick="toggleDepartmentDrawer(this)">
+                <span class="dept-title-txt">Finance</span><span class="dept-pill-count" id="count-Finance">0</span>
+            </div>
+            <div class="dept-btn-card" data-dept="Sales" onclick="toggleDepartmentDrawer(this)">
+                <span class="dept-title-txt">Sales</span><span class="dept-pill-count" id="count-Sales">0</span>
+            </div>
+            <div class="dept-btn-card" data-dept="Branding and Marketing" onclick="toggleDepartmentDrawer(this)">
+                <span class="dept-title-txt">Branding & Mktg</span><span class="dept-pill-count" id="count-Branding-and-Marketing">0</span>
+            </div>
+        </div>
+
+        <div class="panel-directory-drawer" id="panelDirectoryDrawer">
+            <div class="flex-between" style="border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                <div>
+                    <h3 class="page-title" style="font-size: 15px; margin:0;" id="drawerActiveTitle">Tech and Delivery Panel Roster</h3>
+                    <p style="font-size:11.5px; color:#64748b; margin:2px 0 0 0;">Register panellists for this track below. Added users become visible when booking slots for candidates matching this department.</p>
+                </div>
+                <button class="btn-secondary" style="padding: 6px 12px; font-size:12px;" onclick="openAddPanellistModal()">+ Add Panellist to Track</button>
+            </div>
+            <div class="chip-container" id="panellistChipBox"></div>
         </div>
 
         <section class="candidates-section">
@@ -155,10 +175,10 @@
                 <a href="tech-scheduler.html" class="sub-nav-tab active text-decoration-none">
                     <svg class="tab-icon icon-green" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line></svg>
                     <span>Tech Scheduler</span>
-                    <span class="count-pill" id="totalCountBubble">1</span>
+                    <span class="count-pill" id="totalCountBubble">5</span>
                 </a>
                 <a href="#" class="sub-nav-tab text-decoration-none">
-                    <svg class="tab-icon icon-amber" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    <svg class="tab-icon icon-amber" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15 a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     <span>HR Interview</span>
                 </a>
             </div>
@@ -168,41 +188,119 @@
                     <tr>
                         <th class="grid-layout-th col-cand">Candidate Name</th>
                         <th class="grid-layout-th col-panel">Assigned Panellists</th>
-                        <th class="grid-layout-th col-time">Schedule Details</th>
-                        <th class="grid-layout-th col-assets">Teams Assets</th>
+                        <th class="grid-layout-th col-combined-time-assets">Schedule & Assets Detail</th>
+                        <th class="grid-layout-th col-status">Status</th>
+                        <th class="grid-layout-th col-book" style="text-align: center;">Booking</th>
                         <th class="grid-layout-th col-manage" style="padding-right: 24px;">Action</th>
                     </tr>
                 </thead>
                 <tbody id="schedulerListBody">
-                    <tr class="candidate-row" data-name="Grace Hopper">
-                        <td class="grid-layout-td col-cand"><strong>Grace Hopper</strong><div style="font-size:11px; color:var(--text-muted);">Full Stack</div></td>
-                        <td class="grid-layout-td col-panel">
-                            <div class="stacked-panel-wrapper"><strong>Alex Rivera</strong> <span style="font-size:11px; color:var(--text-muted);">(SDE-3)</span></div>
-                            <div class="stacked-panel-wrapper"><strong>Devon Smith</strong> <span style="font-size:11px; color:var(--text-muted);">(Tech Lead)</span></div>
+                    
+                    <tr class="candidate-row" data-name="Grace Hopper" data-dept="Tech and Delivery" data-track="Full Stack">
+                        <td class="grid-layout-td col-cand"><strong>Grace Hopper</strong><div style="font-size:11px; color:#64748b;">Tech & Delivery</div></td>
+                        <td class="grid-layout-td col-panel" id="panelCell-GraceHopper">
+                            <div class="stacked-panel-wrapper"><strong>Gaurav Paliwal</strong> <span style="font-size:11px; color:#64748b;">(Group Manager)</span></div>
+                            <div class="stacked-panel-wrapper"><strong>Arpit Pathak</strong> <span style="font-size:11px; color:#64748b;">(Manager)</span></div>
                         </td>
-                        <td class="grid-layout-td col-time">June 08, 2026 - 10:00 AM<div style="font-size:11px; color:#15803d; font-weight:500;">Duration: 60 mins</div></td>
-                        <td class="grid-layout-td col-assets">
-                            <span class="asset-link-active" onclick="fetchTeamsAsset('Recording', 'Grace Hopper')">🎥 Recording</span><br>
-                            <span class="asset-link-active" style="margin-top:4px;" onclick="fetchTeamsAsset('Transcript', 'Grace Hopper')">📄 Transcript</span>
+                        <td class="grid-layout-td col-combined-time-assets" id="combinedCell-GraceHopper">
+                            <div class="timestamp-txt" style="margin-bottom: 4px;">08 Jun 26 - 10:00 AM (60 mins)</div>
+                            <div style="display:flex; gap:12px; margin-top:2px;">
+                                <span class="asset-link-active" onclick="fetchTeamsAsset('Recording', 'Grace Hopper')">🎥 Recording</span>
+                                <span class="asset-link-active" onclick="fetchTeamsAsset('Transcript', 'Grace Hopper')">📄 Transcript</span>
+                            </div>
+                        </td>
+                        <td class="grid-layout-td col-status" id="statusCell-GraceHopper"><span class="stage-tag completed">Completed</span></td>
+                        <td class="grid-layout-td col-book" style="text-align: center;">
+                            <button class="btn-submit" style="background:#64748b; padding:4px 8px; font-size:11px; opacity:0.6; cursor:not-allowed;" disabled>Locked 🔒</button>
                         </td>
                         <td class="grid-layout-td col-manage">
-                            <select class="action-dropdown" style="width:100px !important;" onchange="handleSchedulerAction(this)">
-                                <option value="" disabled selected>Manage</option>
-                                <option value="cancel">Cancel Interview</option>
-                                <option value="hr-invite">Send Hr Interview Invite</option>
-                
-                                <option value="delete" class="danger-option">Delete Candidate</option>
+                            <select class="action-dropdown" style="width:80px !important;" onchange="handleSchedulerAction(this)">
+                                <option value="" disabled selected>Mng</option>
+                                <option value="hr-invite">HR Invite</option>
+                                <option value="delete" class="danger-option">Delete</option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr class="candidate-row" data-name="Alan Turing" data-dept="Operations" data-track="Logistics Manager">
+                        <td class="grid-layout-td col-cand"><strong>Alan Turing</strong><div style="font-size:11px; color:#64748b;">Operations</div></td>
+                        <td class="grid-layout-td col-panel" id="panelCell-AlanTuring"><span style="color: #94a3b8; font-style: italic; font-size: 12px;">Unassigned</span></td>
+                        <td class="grid-layout-td col-combined-time-assets" id="combinedCell-AlanTuring" style="color: #64748b; font-style: italic; font-size: 12px;">Awaiting Schedule Assignment (Assets Unavailable)</td>
+                        <td class="grid-layout-td col-status" id="statusCell-AlanTuring"><span class="stage-tag pending">Pending</span></td>
+                        <td class="grid-layout-td col-book" style="text-align: center;">
+                            <button class="btn-submit" style="background:#2563eb; padding:4px 8px; font-size:11px;" onclick="openRowBookingModal('Alan Turing', 'Operations')">Book Slot 🗓️</button>
+                        </td>
+                        <td class="grid-layout-td col-manage">
+                            <select class="action-dropdown" style="width:80px !important;" onchange="handleSchedulerAction(this)">
+                                <option value="" disabled selected>Mng</option>
+                                <option value="complete-manual">Complete</option>
+                                <option value="cancel">Cancel</option>
+                                <option value="delete" class="danger-option">Delete</option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr class="candidate-row" data-name="Ada Lovelace" data-dept="HR" data-track="Talent Acquisition">
+                        <td class="grid-layout-td col-cand"><strong>Ada Lovelace</strong><div style="font-size:11px; color:#64748b;">HR</div></td>
+                        <td class="grid-layout-td col-panel" id="panelCell-AdaLovelace"><span style="color: #94a3b8; font-style: italic; font-size: 12px;">Unassigned</span></td>
+                        <td class="grid-layout-td col-combined-time-assets" id="combinedCell-AdaLovelace" style="color: #64748b; font-style: italic; font-size: 12px;">Awaiting Schedule Assignment (Assets Unavailable)</td>
+                        <td class="grid-layout-td col-status" id="statusCell-AdaLovelace"><span class="stage-tag pending">Pending</span></td>
+                        <td class="grid-layout-td col-book" style="text-align: center;">
+                            <button class="btn-submit" style="background:#2563eb; padding:4px 8px; font-size:11px;" onclick="openRowBookingModal('Ada Lovelace', 'HR')">Book Slot 🗓️</button>
+                        </td>
+                        <td class="grid-layout-td col-manage">
+                            <select class="action-dropdown" style="width:80px !important;" onchange="handleSchedulerAction(this)">
+                                <option value="" disabled selected>Mng</option>
+                                <option value="complete-manual">Complete</option>
+                                <option value="cancel">Cancel</option>
+                                <option value="delete" class="danger-option">Delete</option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr class="candidate-row" data-name="Linus Torvalds" data-dept="Finance" data-track="Internal Auditor">
+                        <td class="grid-layout-td col-cand"><strong>Linus Torvalds</strong><div style="font-size:11px; color:#64748b;">Finance</div></td>
+                        <td class="grid-layout-td col-panel" id="panelCell-LinusTorvalds"><span style="color: #94a3b8; font-style: italic; font-size: 12px;">Unassigned</span></td>
+                        <td class="grid-layout-td col-combined-time-assets" id="combinedCell-LinusTorvalds" style="color: #64748b; font-style: italic; font-size: 12px;">Awaiting Schedule Assignment (Assets Unavailable)</td>
+                        <td class="grid-layout-td col-status" id="statusCell-LinusTorvalds"><span class="stage-tag pending">Pending</span></td>
+                        <td class="grid-layout-td col-book" style="text-align: center;">
+                            <button class="btn-submit" style="background:#2563eb; padding:4px 8px; font-size:11px;" onclick="openRowBookingModal('Linus Torvalds', 'Finance')">Book Slot 🗓️</button>
+                        </td>
+                        <td class="grid-layout-td col-manage">
+                            <select class="action-dropdown" style="width:80px !important;" onchange="handleSchedulerAction(this)">
+                                <option value="" disabled selected>Mng</option>
+                                <option value="complete-manual">Complete</option>
+                                <option value="cancel">Cancel</option>
+                                <option value="delete" class="danger-option">Delete</option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr class="candidate-row" data-name="Margaret Hamilton" data-dept="Sales" data-track="Account Executive">
+                        <td class="grid-layout-td col-cand"><strong>Margaret Hamilton</strong><div style="font-size:11px; color:#64748b;">Sales</div></td>
+                        <td class="grid-layout-td col-panel" id="panelCell-MargaretHamilton"><span style="color: #94a3b8; font-style: italic; font-size: 12px;">Unassigned</span></td>
+                        <td class="grid-layout-td col-combined-time-assets" id="combinedCell-MargaretHamilton" style="color: #64748b; font-style: italic; font-size: 12px;">Awaiting Schedule Assignment (Assets Unavailable)</td>
+                        <td class="grid-layout-td col-status" id="statusCell-MargaretHamilton"><span class="stage-tag pending">Pending</span></td>
+                        <td class="grid-layout-td col-book" style="text-align: center;">
+                            <button class="btn-submit" style="background:#2563eb; padding:4px 8px; font-size:11px;" onclick="openRowBookingModal('Margaret Hamilton', 'Sales')">Book Slot 🗓️</button>
+                        </td>
+                        <td class="grid-layout-td col-manage">
+                            <select class="action-dropdown" style="width:80px !important;" onchange="handleSchedulerAction(this)">
+                                <option value="" disabled selected>Mng</option>
+                                <option value="complete-manual">Complete</option>
+                                <option value="cancel">Cancel</option>
+                                <option value="delete" class="danger-option">Delete</option>
                             </select>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <div id="noSchedulerResults" class="empty-state" style="display: none;">No scheduled technical sessions match filters.</div>
+            <div id="noSchedulerResults" class="empty-state" style="display: none;">No scheduled sessions found.</div>
         </section>
     </main>
 
     <div class="modal-overlay" id="panelModalOverlay">
-        <div class="modal-card">
+        <div class="modal-card" style="max-width: 440px;">
             <h2 class="modal-header">Register Technical Panellist</h2>
             <form id="panellistForm">
                 <div class="form-group">
@@ -211,18 +309,14 @@
                 </div>
                 <div class="form-group">
                     <label for="panelDesignation">Designation</label>
-                    <input type="text" id="panelDesignation" class="form-control" placeholder="e.g., Tech Lead, SDE-3" required>
-                </div>
-                <div class="form-group">
-                    <label for="panelDepartment">Department</label>
-                    <input type="text" id="panelDepartment" class="form-control" placeholder="e.g., Technology and Delivery" required>
+                    <input type="text" id="panelDesignation" class="form-control" placeholder="e.g., Team Leader, Executive" required>
                 </div>
                 <div class="form-group">
                     <label for="panelEmail">Email ID</label>
                     <input type="email" id="panelEmail" class="form-control" placeholder="username@company.com" required>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" id="closePanelModalBtn">Cancel</button>
+                    <button type="button" class="btn-secondary" onclick="togglePanelModal(false)">Cancel</button>
                     <button type="submit" class="btn-submit" style="background-color: var(--primary-blue);">Add Panellist</button>
                 </div>
             </form>
@@ -230,28 +324,17 @@
     </div>
 
     <div class="modal-overlay" id="scheduleModalOverlay">
-        <div class="modal-card">
-            <h2 class="modal-header">Schedule Technical Panel Session</h2>
-            <form id="techSchedulerForm">
+        <div class="modal-card" style="max-width: 460px;">
+            <h2 class="modal-header" style="font-size:16px; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">Schedule Panel Session</h2>
+            <form id="techSchedulerForm" style="margin-top:12px;">
                 <div class="form-group">
-                    <label>Organiser Address</label>
-                    <input type="email" class="form-control" value="hr@elasticrew.com" readonly>
+                    <label>Selected Candidate</label>
+                    <input type="text" id="displayCandidateName" class="form-control" readonly style="background:#f1f5f9; font-weight:700;">
                 </div>
                 <div class="form-group">
-                    <label for="selectCandidate">Target Interview Candidate</label>
-                    <select id="selectCandidate" class="form-control" required>
-                        <option value="" disabled selected>Select candidate profile</option>
-                        <option value="Ada Lovelace" data-sub="Frontend">Ada Lovelace (Frontend)</option>
-                        <option value="Linus Torvalds" data-sub="Backend">Linus Torvalds (Backend)</option>
-                    </select>
+                    <label id="panellistSectionLabel">Available Panellists</label>
+                    <div class="checkbox-dropdown-panel" id="panellistCheckboxContainer"></div>
                 </div>
-
-                <div class="form-group">
-                    <label>Select Interview Panellists (Multiple Allowed)</label>
-                    <div class="checkbox-dropdown-panel" id="panellistCheckboxContainer">
-                        </div>
-                </div>
-
                 <div class="form-group">
                     <label for="selectDuration">Session Duration Frame</label>
                     <select id="selectDuration" class="form-control" required>
@@ -271,183 +354,227 @@
                         <input type="time" id="interviewTime" class="form-control" required>
                     </div>
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-secondary" id="closeScheduleModalBtn">Cancel Assignment</button>
-                    <button type="submit" class="btn-submit" style="background-color: #10b981;">Dispatch Teams Invite</button>
+                <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:8px;">
+                    <button type="button" class="btn-secondary" onclick="toggleScheduleModal(false)">Cancel</button>
+                    <button type="submit" class="btn-submit" style="background-color: #10b981;">Confirm Booking Slot</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
+        // DEMO READY STATE: Starts with empty arrays except for the initial pre-seeded group
+        let globalDepartmentPanellistMatrix = {
+            "Tech and Delivery": [
+                { name: "Gaurav Paliwal", desig: "Group Manager", email: "gaurav.p@elasticrew.com" },
+                { name: "Arpit Pathak", desig: "Manager", email: "arpit.p@elasticrew.com" }
+            ],
+            "Operations": [],
+            "HR": [],
+            "Finance": [],
+            "Sales": [],
+            "Branding and Marketing": []
+        };
+
+        let currentActiveSelectedDepartment = "Tech and Delivery";
+        let targetRowCandidateName = "";
+        let targetRowCandidateDept = "";
+
         const schedulerListBody = document.getElementById('schedulerListBody');
         const totalCountBubble = document.getElementById('totalCountBubble');
-        const noSchedulerResults = document.getElementById('noSchedulerResults');
-
-        const panelModalOverlay = document.getElementById('panelModalOverlay');
-        const openPanelModalBtn = document.getElementById('openPanelModalBtn');
-        const closePanelModalBtn = document.getElementById('closePanelModalBtn');
-        const panellistForm = document.getElementById('panellistForm');
-
-        const scheduleModalOverlay = document.getElementById('scheduleModalOverlay');
-        const openScheduleModalBtn = document.getElementById('openScheduleModalBtn');
-        const closeScheduleModalBtn = document.getElementById('closeScheduleModalBtn');
-        const techSchedulerForm = document.getElementById('techSchedulerForm');
-        
+        const panelDirectoryDrawer = document.getElementById('panelDirectoryDrawer');
+        const drawerActiveTitle = document.getElementById('drawerActiveTitle');
         const panellistChipBox = document.getElementById('panellistChipBox');
+        
+        const panelModalOverlay = document.getElementById('panelModalOverlay');
+        const scheduleModalOverlay = document.getElementById('scheduleModalOverlay');
+        const panellistForm = document.getElementById('panellistForm');
+        const techSchedulerForm = document.getElementById('techSchedulerForm');
         const panellistCheckboxContainer = document.getElementById('panellistCheckboxContainer');
+        const displayCandidateName = document.getElementById('displayCandidateName');
+        const panellistSectionLabel = document.getElementById('panellistSectionLabel');
 
         function updateViewMetricCounter() {
             totalCountBubble.innerText = schedulerListBody.getElementsByClassName('candidate-row').length;
         }
 
-        function togglePanelModal(show) {
-            if (show) panelModalOverlay.classList.add('active');
-            else { panelModalOverlay.classList.remove('active'); panellistForm.reset(); }
-        }
-        function toggleScheduleModal(show) {
-            if (show) { renderPanellistCheckboxes(); scheduleModalOverlay.classList.add('active'); }
-            else { scheduleModalOverlay.classList.remove('active'); techSchedulerForm.reset(); }
-        }
-
-        openPanelModalBtn.addEventListener('click', () => togglePanelModal(true));
-        closePanelModalBtn.addEventListener('click', () => togglePanelModal(false));
-        panelModalOverlay.addEventListener('click', (e) => { if (e.target === panelModalOverlay) togglePanelModal(false); });
-
-        openScheduleModalBtn.addEventListener('click', () => toggleScheduleModal(true));
-        closeScheduleModalBtn.addEventListener('click', () => toggleScheduleModal(false));
-        scheduleModalOverlay.addEventListener('click', (e) => { if (e.target === scheduleModalOverlay) toggleScheduleModal(false); });
-
-        // Add Panellist Chip Roster
-        panellistForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('panelName').value.trim();
-            const designation = document.getElementById('panelDesignation').value.trim();
-            const email = document.getElementById('panelEmail').value.trim();
-
-            const newChip = document.createElement('div');
-            newChip.className = 'panellist-chip';
-            newChip.setAttribute('data-name', name);
-            newChip.setAttribute('data-designation', designation);
-            newChip.setAttribute('data-email', email);
-            newChip.innerHTML = `<span>${name} (${designation})</span><button class="remove-chip-btn" onclick="removePanellistChip(this)">×</button>`;
+        function toggleDepartmentDrawer(cardElement) {
+            const chosenDept = cardElement.getAttribute('data-dept');
+            document.querySelectorAll('.dept-btn-card').forEach(c => c.classList.remove('active'));
             
-            panellistChipBox.appendChild(newChip);
-            togglePanelModal(false);
-        });
-
-        function removePanellistChip(button) {
-            const chip = button.closest('.panellist-chip');
-            if (confirm(`Remove ${chip.getAttribute('data-name')} from active directory options?`)) {
-                chip.remove();
+            if (panelDirectoryDrawer.style.display === "block" && currentActiveSelectedDepartment === chosenDept) {
+                panelDirectoryDrawer.style.display = "none";
+            } else {
+                cardElement.classList.add('active');
+                currentActiveSelectedDepartment = chosenDept;
+                drawerActiveTitle.innerText = `${chosenDept} Panel Roster`;
+                renderPanellistDirectoryChips();
+                panelDirectoryDrawer.style.display = "block";
             }
         }
 
-        // Dynamically populates panel checklist array items
-        function renderPanellistCheckboxes() {
-            panellistCheckboxContainer.innerHTML = '';
-            const chips = panellistChipBox.getElementsByClassName('panellist-chip');
+        function renderPanellistDirectoryChips() {
+            panellistChipBox.innerHTML = '';
+            const list = globalDepartmentPanellistMatrix[currentActiveSelectedDepartment] || [];
             
-            if(chips.length === 0) {
-                panellistCheckboxContainer.innerHTML = '<div style="font-size:12px; color:var(--text-muted); font-style:italic;">No active panel members registered yet.</div>';
+            if (list.length === 0) {
+                panellistChipBox.innerHTML = '<div style="font-size:12.5px; color:#64748b; font-style:italic; padding:4px 0;">No active panellists registered for this track. Click Add Panellist to populate.</div>';
                 return;
             }
 
-            for (let chip of chips) {
-                const name = chip.getAttribute('data-name');
-                const designation = chip.getAttribute('data-designation');
-                const email = chip.getAttribute('data-email');
+            list.forEach((panellist, index) => {
+                const chip = document.createElement('div');
+                chip.className = 'panellist-chip';
+                chip.innerHTML = `<span><strong>${panellist.name}</strong> (${panellist.desig})</span><button class="remove-chip-btn" onclick="removeDirectoryRosterNode(${index})">&times;</button>`;
+                panellistChipBox.appendChild(chip);
+            });
+        }
 
-                const itemLabel = document.createElement('label');
-                itemLabel.className = 'checkbox-item';
-                itemLabel.innerHTML = `
-                    <input type="checkbox" name="selectedPanellists" value="${name}|${designation}|${email}">
-                    <span>${name} (${designation})</span>
-                `;
-                panellistCheckboxContainer.appendChild(itemLabel);
+        function updateBadgeCounters() {
+            Object.keys(globalDepartmentPanellistMatrix).forEach(key => {
+                const standardizedId = key.replace(/\s+/g, '-');
+                const badge = document.getElementById(`count-${standardizedId}`);
+                if (badge) badge.innerText = globalDepartmentPanellistMatrix[key].length;
+            });
+        }
+
+        function openAddPanellistModal() { panelModalOverlay.classList.add('active'); }
+        function togglePanelModal(show) { if (!show) { panelModalOverlay.classList.remove('active'); panellistForm.reset(); } }
+        
+        panellistForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('panelName').value.trim();
+            const desig = document.getElementById('panelDesignation').value.trim();
+            const email = document.getElementById('panelEmail').value.trim();
+
+            globalDepartmentPanellistMatrix[currentActiveSelectedDepartment].push({ name, desig, email });
+            togglePanelModal(false);
+            renderPanellistDirectoryChips();
+            updateBadgeCounters();
+        });
+
+        function removeDirectoryRosterNode(index) {
+            const targetName = globalDepartmentPanellistMatrix[currentActiveSelectedDepartment][index].name;
+            if (confirm(`Remove ${targetName} from the current department directory?`)) {
+                globalDepartmentPanellistMatrix[currentActiveSelectedDepartment].splice(index, 1);
+                renderPanellistDirectoryChips();
+                updateBadgeCounters();
             }
         }
 
-        function fetchTeamsAsset(assetType, candidate) {
-            alert(`Teams Asset API Sync: Compiling media secure data chunks... Locating ${candidate}'s Technical Interview ${assetType} link data records successfully.`);
+        // --- HOOK: CONTEXT LOCKED BOOKING TRIGGER BASED ON DEPT MATCHES ---
+        function openRowBookingModal(candidateName, candidateDept) {
+            targetRowCandidateName = candidateName;
+            targetRowCandidateDept = candidateDept;
+            
+            displayCandidateName.value = candidateName;
+            panellistSectionLabel.innerText = `Select Panellists from ${candidateDept}:`;
+            
+            panellistCheckboxContainer.innerHTML = '';
+            const list = globalDepartmentPanellistMatrix[candidateDept] || [];
+            
+            if (list.length === 0) {
+                panellistCheckboxContainer.innerHTML = `<div style="font-size:12px; color:#ef4444; font-style:italic;">No active panellists found registered under ${candidateDept}. Add them via the department cards above to demonstrate live matching to stakeholders.</div>`;
+            } else {
+                list.forEach(p => {
+                    const label = document.createElement('label');
+                    label.className = 'checkbox-item';
+                    label.innerHTML = `<input type="checkbox" name="selectedPanellists" value="${p.name}|${p.desig}"><span>${p.name} (${p.desig})</span>`;
+                    panellistCheckboxContainer.appendChild(label);
+                });
+            }
+            scheduleModalOverlay.classList.add('active');
         }
+
+        function toggleScheduleModal(show) { if(!show) scheduleModalOverlay.classList.remove('active'); }
+
+        techSchedulerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const checkedBoxes = document.querySelectorAll('input[name="selectedPanellists"]:checked');
+            if(checkedBoxes.length === 0) { alert("Please attach at least one team member."); return; }
+
+            const duration = document.getElementById('selectDuration').value;
+            const rawDate = document.getElementById('interviewDate').value;
+            const rawTime = document.getElementById('interviewTime').value;
+
+            const dateObj = new Date(rawDate);
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const month = dateObj.toLocaleDateString('en-US', { month: 'short' });
+            const year = String(dateObj.getFullYear()).substring(2);
+            const formattedDate = `${day} ${month} ${year}`;
+
+            const [hours, minutes] = rawTime.split(':');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const formattedTime = `${hours % 12 || 12}:${minutes} ${ampm}`;
+
+            let panelHTML = '';
+            checkedBoxes.forEach(box => {
+                const [pName, pDesig] = box.value.split('|');
+                panelHTML += `<div class="stacked-panel-wrapper"><strong>${pName}</strong> <span style="font-size:11px; color:#64748b;">(${pDesig})</span></div>`;
+            });
+
+            const compactIdKey = targetRowCandidateName.replace(/\s+/g, '');
+            
+            const panelCell = document.getElementById(`panelCell-${compactIdKey}`);
+            const combinedCell = document.getElementById(`combinedCell-${compactIdKey}`);
+            const statusCell = document.getElementById(`statusCell-${compactIdKey}`);
+
+            if (panelCell && combinedCell) {
+                panelCell.innerHTML = panelHTML;
+                combinedCell.innerHTML = `<div class="timestamp-txt">${formattedDate} - ${formattedTime}</div><div style="font-size:11px; color:#64748b;">Duration: ${duration}</div>`;
+                if(statusCell) statusCell.innerHTML = '<span class="stage-tag pending">Pending</span>';
+            }
+
+            scheduleModalOverlay.classList.remove('active');
+            techSchedulerForm.reset();
+        });
 
         function handleSchedulerAction(dropdown) {
             const action = dropdown.value;
             const row = dropdown.closest('.candidate-row');
             if (!row) return;
             const name = row.getAttribute('data-name');
+            const compactIdKey = name.replace(/\s+/g, '');
 
             if (action === 'delete') {
-                if (confirm(`Are you sure you want to delete ${name} from the scheduling queue?`)) {
+                if (confirm(`Delete ${name} from the scheduling queue?`)) {
                     row.remove();
                     updateViewMetricCounter();
                 }
+            } else if (action === 'cancel') {
+                const statusCell = document.getElementById(`statusCell-${compactIdKey}`);
+                const combinedCell = document.getElementById(`combinedCell-${compactIdKey}`);
+                if(statusCell) statusCell.innerHTML = '<span class="stage-tag cancelled">Cancelled</span>';
+                if(combinedCell) {
+                    combinedCell.innerHTML = '—';
+                    combinedCell.style.color = '#cbd5e1';
+                }
+                dropdown.value = "";
+            } else if (action === 'complete-manual') {
+                const statusCell = document.getElementById(`statusCell-${compactIdKey}`);
+                const combinedCell = document.getElementById(`combinedCell-${compactIdKey}`);
+                if(statusCell) statusCell.innerHTML = '<span class="stage-tag completed">Completed</span>';
+                if(combinedCell) {
+                    combinedCell.innerHTML = `
+                        <div class="timestamp-txt" style="margin-bottom: 4px;">Manually Logged</div>
+                        <div style="display:flex; gap:12px; margin-top:2px;">
+                            <span class="asset-link-active" onclick="fetchTeamsAsset('Recording', '${name}')">🎥 Recording</span>
+                            <span class="asset-link-active" onclick="fetchTeamsAsset('Transcript', '${name}')">📄 Transcript</span>
+                        </div>
+                    `;
+                }
                 dropdown.value = "";
             } else if (action === 'hr-invite') {
-                alert(`Success: HR Round Invitation successfully configured and dispatched to ${name}. Moving candidate down the pipeline.`);
-                row.remove();
-                updateViewMetricCounter();
+                alert(`HR round invite link successfully sent to ${name}.`);
+                dropdown.value = "";
             }
         }
 
-        // Handle Assignment form submission
-        techSchedulerForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        function fetchTeamsAsset(type, name) {
+            alert(`Fetching Microsoft Teams Connected Data...\nProfile Target: ${name}\nAsset Request: Live ${type} Stream Room Passed.`);
+        }
 
-            // Extract data from checkboxes array
-            const checkedBoxes = document.querySelectorAll('input[name="selectedPanellists"]:checked');
-            if(checkedBoxes.length === 0) {
-                alert("Please check off at least one panellist engineer to run this technical interview block session.");
-                return;
-            }
-
-            const candSelect = document.getElementById('selectCandidate');
-            const candidateName = candSelect.value;
-            const subDept = candSelect.options[candSelect.selectedIndex].getAttribute('data-sub');
-            
-            const duration = document.getElementById('selectDuration').value;
-            const rawDate = document.getElementById('interviewDate').value;
-            const rawTime = document.getElementById('interviewTime').value;
-
-            const formattedDate = new Date(rawDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
-            const [hours, minutes] = rawTime.split(':');
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            const formattedTime = `${hours % 12 || 12}:${minutes} ${ampm}`;
-
-            // Build stacked HTML column display block strings for all chosen panellists
-            let panelColumnHTML = '';
-            checkedBoxes.forEach(box => {
-                const [pName, pDesig, pEmail] = box.value.split('|');
-                panelColumnHTML += `
-                    <div class="stacked-panel-wrapper">
-                        <strong>${pName}</strong> <span style="font-size:11px; color:var(--text-muted);">(${pDesig})</span>
-                    </div>`;
-            });
-
-            const newRow = document.createElement('tr');
-            newRow.className = 'candidate-row';
-            newRow.setAttribute('data-name', candidateName);
-
-            newRow.innerHTML = `
-                <td class="grid-layout-td col-cand"><strong>${candidateName}</strong><div style="font-size:11px; color:var(--text-muted);">${subDept}</div></td>
-                <td class="grid-layout-td col-panel">${panelColumnHTML}</td>
-                <td class="grid-layout-td col-time">${formattedDate} - ${formattedTime}<div style="font-size:11px; color:var(--text-muted); font-weight:500;">Duration: ${duration}</div></td>
-                <td class="grid-layout-td col-assets"><span style="font-size:12px; color:var(--text-muted); font-style:italic;">Awaiting completion...</span></td>
-                <td class="grid-layout-td col-manage">
-                    <select class="action-dropdown" style="width:100px !important;" onchange="handleSchedulerAction(this)">
-                        <option value="" disabled selected>Manage</option>
-                        <option value="hr-invite">Send HR Invite</option>
-                        <option value="delete" class="danger-option">Delete</option>
-                    </select>
-                </td>
-            `;
-
-            schedulerListBody.appendChild(newRow);
-            toggleScheduleModal(false);
-            updateViewMetricCounter();
-        });
-
+        updateBadgeCounters();
         updateViewMetricCounter();
     </script>
 </body>

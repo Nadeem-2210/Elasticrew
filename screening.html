@@ -37,6 +37,21 @@
             font-weight: 500;
         }
 
+        /* --- STAGE TAG CORRECTION FOR COULD NOT COMPLETE --- */
+        .stage-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 12px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .stage-tag.screening { background-color: #f1f5f9; color: #475569; }
+        .stage-tag.offered { background-color: #dcfce7; color: #15803d; }
+        .stage-tag.rejected { background-color: #fee2e2; color: #b91c1c; }
+        .stage-tag.cancelled { background-color: #ffedd5; color: #c2410c; } /* Crisp orange layout fix for clear tracking bounds */
+
         /* --- IMMUTABLE STABLE ASPECT-RATIO VIDEO VIEWPORT --- */
         .locked-video-viewport {
             width: 100%;
@@ -246,7 +261,7 @@
                 </a>
             </div>
 
-            <!-- PIPELINE DATA GRID WITH CUSTOM DATE FORMAT UPDATED -->
+            <!-- PIPELINE DATA GRID -->
             <table class="candidate-table" id="screeningTable" style="table-layout: fixed; width: 100%;">
                 <thead>
                     <tr>
@@ -312,7 +327,8 @@
                         <td class="grid-layout-td col-dept">Backend</td>
                         <td class="grid-layout-td col-invited"><span class="timestamp-txt">20 May 26</span></td>
                         <td class="grid-layout-td col-completed"><span class="timestamp-txt">—</span></td>
-                        <td class="grid-layout-td col-status"><span class="stage-tag profiling-cancelled">Could not complete</span></td>
+                        <!-- FIXED: Swapped out broken template notation to native balanced "cancelled" styling hook -->
+                        <td class="grid-layout-td col-status"><span class="stage-tag cancelled">Could not complete</span></td>
                         <td class="grid-layout-td col-action">
                             <select class="action-dropdown" onchange="handleAction(this)">
                                 <option value="" disabled selected>Manage</option>
