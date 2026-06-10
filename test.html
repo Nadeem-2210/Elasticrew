@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElastiCrew - Enterprise Hiring Pipeline</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* --- PIPELINE LAYOUT BOUNDARY MATRIX --- */
+        html, body { margin:0; padding:0; background:#f8fafc; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; color:#1e293b; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .flex-center { display: flex; align-items: center; gap: 8px; }
+        
+        /* Table Geometry Lines */
+        .grid-layout-th, .grid-layout-td { padding: 14px 16px; text-align: left; vertical-align: middle; }
+        .timestamp-txt { font-family: monospace; font-size: 12px; color: #64748b; font-weight: 500; }
+        
+        /* Status Pillar Badges */
+        .stage-tag { display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: 600; border-radius: 12px; text-align: center; white-space: nowrap; }
+        .stage-tag.screening { background-color: #f1f5f9; color: #475569; }
+        .stage-tag.advanced { background-color: #e0e7ff; color: #4338ca; }
+        .stage-tag.completed { background-color: #dcfce7; color: #15803d; }
+        .stage-tag.cancelled { background-color: #fee2e2; color: #b91c1c; }
+
+        .grid-status-dropdown { padding: 4px 24px 4px 10px; font-size: 12px; font-weight: 700; border-radius: 12px; border: 1px solid transparent; cursor: pointer; appearance: none; -webkit-appearance: none; }
+        .status-active { background-color: #dcfce7; color: #15803d; }
+        .status-onhold { background-color: #fef9c3; color: #a16207; }
+        .status-rejected { background-color: #fee2e2; color: #b91c1c; }
+        .status-hired { background-color: #ccfbf1; color: #0f766e; }
+        .status-withdrawn { background-color: #e2e8f0; color: #475569; }
+
+        /* Widen Email Modal Context */
+        .email-modal-card { max-width: 640px !important; width: 90% !important; max-height: 90vh !important; display: flex; flex-direction: column; overflow-y: auto; padding: 24px 28px !important; }
+        .modal-scrollable-form { display: flex; flex-direction: column; gap: 14px; margin-top: 14px; }
+        .form-group label { margin-bottom: 6px !important; font-size: 12.5px !important; font-weight: 600; color: #334155; display: block;}
+        .form-control { padding: 8px 12px !important; font-size: 13px !important; border: 1px solid #cbd5e1; border-radius: 6px; width: 100%; box-sizing: border-box; }
+        .textarea-body { height: 110px !important; resize: none; }
+        .textarea-remarks { height: 70px !important; resize: none; background-color: #fafafa; }
+
+        /* --- TECH SCHEDULER EXPANDABLE BUTTON WORKSPACE --- */
+        .dept-button-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin: 16px 0; }
+        .dept-btn-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 16px; text-align: left; cursor: pointer; transition: all 0.15s ease; display: flex; justify-content: space-between; align-items: center; }
+        .dept-btn-card.active { background: #eff6ff; border-color: #2563eb; box-shadow: inset 0 0 0 1px #2563eb; }
+        .dept-title-txt { font-size: 13px; font-weight: 700; color: #1e293b; }
+        .dept-pill-count { font-size: 11px; background: #f1f5f9; padding: 2px 6px; border-radius: 10px; font-weight: 600; color: #475569; }
+        .dept-btn-card.active .dept-pill-count { background: #3b82f6; color: #ffffff; }
+        .panel-directory-drawer { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; display: none; }
+        .panellist-chip { display: inline-flex; align-items: center; background-color: #f8fafc; color: #334155; padding: 6px 12px; border-radius: 20px; font-size: 12px; border: 1px solid #e2e8f0; margin-right:6px;}
+        .checkbox-dropdown-panel { border: 1px solid #cbd5e1; border-radius: 6px; max-height: 120px; overflow-y: auto; padding: 8px 12px; background-color: #ffffff; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; color: #334155; cursor: pointer; }
+
+        /* --- IMMUTABLE FRAME SCREENING PLAYER POPUPS (60% LOCKS) --- */
+        .recording-popup-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); display: flex; align-items: center; justify-content: center; z-index: 99999; opacity: 0; pointer-events: none; transition: opacity 0.15s ease; }
+        .recording-popup-backdrop.active { opacity: 1; pointer-events: auto; }
+        .premium-60-modal { background: #ffffff; border-radius: 12px; width: 60vw !important; height: 60vh !important; min-width: 820px; display: grid; grid-template-columns: 1.2fr 1fr; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); }
+        .locked-video-viewport { width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 6px; object-fit: cover; display: block; }
+        .modal-q-nav-strip { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-top: 14px; }
+        .modal-q-node { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; border-radius: 4px; padding: 6px 0; text-align: center; font-size: 11px; font-weight: 700; cursor: pointer; }
+        .modal-q-node.active-q { background: #7c3aed; color: #fff; }
+
+        /* --- MASTER CLIENT-REPORT INSIGHT MODAL LAYOUT --- */
+        .master-all-dossier-modal { max-width: 1340px !important; width: 95% !important; height: 90vh !important; padding: 20px !important; background: #f8fafc !important; }
+        .three-column-parallel-workspace { display: grid; grid-template-columns: 320px 1fr 1fr; gap: 16px; height: calc(100% - 80px); min-height: 0; }
+        .dossier-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; min-height: 0; }
+        .dossier-scroll-box { flex-grow: 1; overflow-y: auto; padding-right: 4px; }
+        .metric-bar-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+        .metric-bar-container { width: 100%; height: 6px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+        .metric-bar-fill { height: 100%; border-radius: 4px; }
+        .spotify-lyrics-container { background: #0b0f19; border-radius: 8px; padding: 14px; height: 140px; overflow-y: auto; color: #64748b; font-size: 12px; line-height: 1.4; }
+        .lyrics-line-sync { margin-bottom: 6px; }
+        .lyrics-line-sync.active { color: #10b981; font-weight: 700; }
+        .vector-graph-container { display: flex; align-items: flex-end; gap: 10px; background: #fafafa; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; height: 60px; }
+        .vector-graph-bar { flex-grow: 1; background: #10b981; border-radius: 2px 2px 0 0; position: relative; }
+        
+        .action-dropdown { width: 130px !important; }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR ENGINE -->
+    <nav class="sidebar">
+        <div class="sidebar-header"><h1 class="sidebar-brand">ElastiCrew</h1></div>
+        <ul class="nav-menu">
+            <li class="nav-menu-item active"><a href="#" onclick="alert('Enterprise Master Core Active')"><span>Pipeline Engine</span></a></li>
+        </ul>
+        <div class="logout-container"><a href="#" class="logout-link"><span>Logout</span></a></div>
+    </nav>
+
+    <!-- MAIN CONTROL HUB CANVAS -->
+    <main class="main-content">
+        <header class="header-actions">
+            <h1 class="page-title" id="pipelineViewHeader">Hiring Automation Framework</h1>
+            <button class="btn-add" id="pipelineAddCandidateTriggerBtn" onclick="openAddCandidateModal()">+ Upload & Parse Candidate</button>
+        </header>
+
+        <section class="candidates-section">
+            
+            <!-- MASTER SEQUENTIAL PIPELINE ROUTING SUB NAV BAR -->
+            <div class="sub-nav-container">
+                <a href="#" class="sub-nav-tab active" id="tab-screening" onclick="switchActivePipelineStageView('screening')">
+                    <span>1. Video Bot Screening</span><span class="count-pill" id="badge-screening">0</span>
+                </a>
+                <a href="#" class="sub-nav-tab" id="tab-mcq" onclick="switchActivePipelineStageView('mcq')">
+                    <span>2. MCQ Assessment</span><span class="count-pill" id="badge-mcq">0</span>
+                </a>
+                <a href="#" class="sub-nav-tab" id="tab-tech" onclick="switchActivePipelineStageView('tech')">
+                    <span>3. Tech Scheduler</span><span class="count-pill" id="badge-tech">0</span>
+                </a>
+                <a href="#" class="sub-nav-tab" id="tab-hr" onclick="switchActivePipelineStageView('hr')">
+                    <span>4. HR Interview</span><span class="count-pill" id="badge-hr">0</span>
+                </a>
+                <a href="#" class="sub-nav-tab" id="tab-all" onclick="switchActivePipelineStageView('all')">
+                    <span>5. All Candidates (Archive)</span><span class="count-pill" id="badge-all">0</span>
+                </a>
+            </div>
+
+            <!-- TABLE CONTAINER CORE -->
+            <div class="table-responsive-wrapper" style="background:#ffffff; border-radius:8px; border:1px solid #e2e8f0; margin-top:16px;">
+                <table class="candidate-table" id="masterStatePipelineTable" style="table-layout: fixed; width: 100%;">
+                    <thead id="pipelineTheadBlock"></thead>
+                    <tbody id="pipelineTbodyBlock"></tbody>
+                </table>
+                <div id="pipelineEmptyStateState" class="empty-state" style="display: none; padding:40px; text-align:center; color:#64748b;">No candidate data segments occupy this active lifecycle block.</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- --- SEAMLESS WORKSPACE INLINE OVERLAY WINDOW CORES --- -->
+
+    <!-- MODAL 1: UPLOAD & ADD CANDIDATE MODAL -->
+    <div class="modal-overlay" id="addCandidateModalOverlay">
+        <div class="modal-card" style="max-width: 440px;">
+            <h2 class="modal-header">Add New Candidate</h2>
+            <form id="addCandidateForm" onsubmit="executeCandidateIngestionPipeline(event)">
+                <div class="form-group">
+                    <label>Full Candidate Name</label>
+                    <input type="text" id="newCandName" class="form-control" placeholder="e.g., Rehan Raza" required>
+                </div>
+                <div class="form-group" style="margin-top:12px;">
+                    <label>Department Target</label>
+                    <select id="newCandDept" class="form-control" required>
+                        <option value="Tech and Delivery">Tech and Delivery</option>
+                        <option value="Operations">Operations</option>
+                        <option value="HR">HR</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Sales">Sales</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-top:12px;">
+                    <label>Sub-Department Specialty Track</label>
+                    <input type="text" id="newCandTrack" class="form-control" placeholder="e.g., Full Stack, Logistics" required>
+                </div>
+                <div class="form-group" style="margin-top:12px;">
+                    <label>Upload Document Resume</label>
+                    <input type="file" id="newCandFile" class="form-control" accept=".pdf" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeAddCandidateModal()">Cancel</button>
+                    <button type="submit" class="btn-submit">Ingest & Parse</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: INTERACTIVE DISPATCH PACK INVITATIONS MODAL -->
+    <div class="modal-overlay" id="dispatchInviteModalOverlay">
+        <div class="modal-card email-modal-card">
+            <h2 class="modal-header" id="inviteModalTitleText">Configure Pipeline Invitation Token</h2>
+            <form id="dispatchInviteForm" class="modal-scrollable-form" onsubmit="executeStateTransitionEvent(event)">
+                <div class="form-group"><label>Candidate Receiver</label><input type="text" id="inviteTargetEmail" class="form-control" readonly></div>
+                <div class="form-group"><label>Subject</label><input type="text" id="inviteSubject" class="form-control" required></div>
+                <div class="form-group"><label>Email Body Message Workspace</label><textarea id="inviteBody" class="form-control textarea-body" required></textarea></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeDispatchInviteModal()">Cancel</button>
+                    <button type="submit" class="btn-submit" id="inviteSubmitActionLabel" style="background:#2563eb;">Dispatch Token Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: TECH INTERVIEW DYNAMIC DRAWER ASSIGNMENT SLOTS -->
+    <div class="modal-overlay" id="techSchedulerBookingModalOverlay">
+        <div class="modal-card" style="max-width: 460px;">
+            <h2 class="modal-header">Configure Panel Assignment</h2>
+            <form id="techSchedulerBookingForm" style="margin-top:12px;" onsubmit="executeTechBookingStateTransition(event)">
+                <div class="form-group"><label>Target Profile Candidate</label><input type="text" id="tsDisplayCandName" class="form-control" readonly style="background:#f1f5f9; font-weight:700;"></div>
+                
+                <div class="form-group" style="margin-top:12px;">
+                    <label id="tsPanellistTrackLabel">Matching Department Panellists Available</label>
+                    <div class="checkbox-dropdown-panel" id="tsCheckboxContainer"></div>
+                </div>
+
+                <div class="form-group" style="margin-top:12px;">
+                    <label>Session Duration Allocation</label>
+                    <select id="tsDuration" class="form-control">
+                        <option value="30 mins">30 mins</option>
+                        <option value="60 mins" selected>60 mins</option>
+                        <option value="1:30 mins">1:30 mins</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
+                    <div><label>Date Slot</label><input type="date" id="tsDate" class="form-control" required></div>
+                    <div><label>Start Time</label><input type="time" id="tsTime" class="form-control" required></div>
+                </div>
+                <div class="modal-actions" style="margin-top:16px;">
+                    <button type="button" class="btn-secondary" onclick="closeTechBookingModal()">Cancel</button>
+                    <button type="submit" class="btn-submit" style="background:#10b981;">Lock & Dispatch Teams Meeting</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: RECORDING INSPECTION OVERLAY MODAL (60% FIXED FOOTPRINT VIEWER) -->
+    <div class="recording-popup-backdrop" id="recordingPlayerModal" onclick="if(event.target===this)toggleRecordingModal()">
+        <div class="premium-60-modal">
+            <div class="modal-left-media">
+                <div style="flex-grow:1; display:flex; align-items:center; justify-content:center; min-height:0;"><video id="modalVideoPlayer" controls class="locked-video-viewport"><source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4"></video></div>
+                <div class="modal-q-nav-strip">
+                    <div class="modal-q-node active-q" onclick="swapModalPlaybackNode(1)">Q1</div><div class="modal-q-node" onclick="swapModalPlaybackNode(2)">Q2</div><div class="modal-q-node" onclick="swapModalPlaybackNode(3)">Q3</div><div class="modal-q-node" onclick="swapModalPlaybackNode(4)">Q4</div>
+                    <div class="modal-q-node" onclick="swapModalPlaybackNode(5)">Q5</div><div class="modal-q-node" onclick="swapModalPlaybackNode(6)">Q6</div><div class="modal-q-node" onclick="swapModalPlaybackNode(7)">Q7</div><div class="modal-q-node" onclick="swapModalPlaybackNode(8)">Q8</div>
+                </div>
+            </div>
+            <div class="modal-right-data">
+                <div class="flex-between" style="border-bottom:1px solid #e2e8f0; padding-bottom:8px; flex-shrink:0;">
+                    <div><h3 id="modalCandLabel" style="font-size:14px; font-weight:800; margin:0;">Candidate Playback</h3><p id="modalQuestionIndexLabel" style="font-size:11px; color:#64748b; margin:2px 0 0 0; font-weight:600;">Question 1 Active</p></div>
+                    <button style="background:none; border:none; font-size:22px; cursor:pointer; color:#94a3b8; line-height:1;" onclick="toggleRecordingModal()">&times;</button>
+                </div>
+                <div class="box-scroll-transcript">
+                    <p style="margin:0 0 4px 0; color:#1e3a8a; font-weight:700; font-size:11px; text-transform:uppercase;">Question Prompt Context:</p>
+                    <p id="modalQuestionString" style="font-style:italic; margin:0 0 12px 0; color:#475569;"></p>
+                    <hr style="border:none; border-top:1px solid #f1f5f9; margin-bottom:10px;">
+                    <p style="margin:0 0 4px 0; color:#10b981; font-weight:700; font-size:11px; text-transform:uppercase;">Response Transcript:</p>
+                    <p id="modalAnswerString" style="color:#1e293b; margin:0;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: MASTER DOSSIER ARCHIVE REPORT -->
+    <div class="modal-overlay" id="masterDossierArchiveModal" onclick="if(event.target===this)closeMasterDossierModal()">
+        <div class="modal-card master-all-dossier-modal">
+            <div class="flex-between" style="border-bottom:1px solid #cbd5e1; padding-bottom:10px; margin-bottom:14px; flex-shrink:0;">
+                <div class="flex-center">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" style="width:40px; height:40px; border-radius:50%; object-fit:cover;" alt="Avatar">
+                    <div>
+                        <h2 id="mdCandidateName" style="font-size:15px; font-weight:700; margin:0;"></h2>
+                        <p id="mdCandidateTrack" style="font-size:12px; color:#64748b; margin:0;"></p>
+                    </div>
+                </div>
+                <button class="btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="closeMasterDossierModal()">Close Dossier Report</button>
+            </div>
+
+            <div class="three-column-parallel-workspace">
+                <div class="dossier-card">
+                    <h4 style="font-size:11px; font-weight:700; color:#1e3a8a; text-transform:uppercase; margin:0 0 12px 0; border-bottom:1px solid #f1f5f9; padding-bottom:4px;">Evaluation Parameters</h4>
+                    <div class="dossier-scroll-box">
+                        <div class="metric-bar-row"><div class="flex-between" style="font-size:11px; font-weight:600;"><span>Screening Match</span><span id="mdScoreScreening"></span></div><div class="metric-bar-container"><div id="mdFillScreening" class="metric-bar-fill" style="background:#7c3aed;"></div></div></div>
+                        <div class="metric-bar-row"><div class="flex-between" style="font-size:11px; font-weight:600;"><span>MCQ Evaluation Score</span><span id="mdScoreMcq"></span></div><div class="metric-bar-container"><div id="mdFillMcq" class="metric-bar-fill" style="background:#2563eb;"></div></div></div>
+                        <div class="metric-bar-row"><div class="flex-between" style="font-size:11px; font-weight:600;"><span>Technical Evaluation</span><span id="mdScoreTech"></span></div><div class="metric-bar-container"><div id="mdFillTech" class="metric-bar-fill" style="background:#10b981;"></div></div></div>
+                        <div class="metric-bar-row"><div class="flex-between" style="font-size:11px; font-weight:600;"><span>HR Alignment Index</span><span id="mdScoreHr"></span></div><div class="metric-bar-container"><div id="mdFillHr" class="metric-bar-fill" style="background:#f59e0b;"></div></div></div>
+                        <div style="background:#1e293b; color:#fff; border-radius:6px; padding:10px; text-align:center; margin-top:14px;">
+                            <span style="font-size:10px; text-transform:uppercase; display:block; color:#94a3b8;">Dossier Status</span><strong id="mdAdminStatusText" style="font-size:15px; font-weight:800;"></strong>
+                        </div>
+                        <div style="margin-top:12px; font-size:11px; color:#475569; background:#f8fafc; padding:8px; border-radius:4px; border:1px solid #e2e8f0;">
+                            <strong>Latest Remarks Stack:</strong><br><span id="mdRemarksText"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="dossier-card">
+                    <h4 style="font-size:11px; font-weight:700; color:#1e3a8a; text-transform:uppercase; margin:0 0 10px 0; border-bottom:1px solid #f1f5f9; padding-bottom:4px;">Video Screening Workspace</h4>
+                    <video controls style="width:100%; height:120px; background:#000; border-radius:4px;"><source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4"></video>
+                    <h5 style="font-size:10px; text-transform:uppercase; color:#475569; margin:10px 0 4px 0;">Synchronized Transcript Lines</h5>
+                    <div class="spotify-lyrics-container">
+                        <div class="lyrics-line-sync passed"><strong>AI:</strong> Explain CORS whitelisting arrays.</div>
+                        <div class="lyrics-line-sync active"><strong>Candidate:</strong> Managed straight within application configuration interceptors dynamically.</div>
+                    </div>
+                </div>
+                <div class="dossier-card">
+                    <h4 style="font-size:11px; font-weight:700; color:#1e3a8a; text-transform:uppercase; margin:0 0 10px 0; border-bottom:1px solid #f1f5f9; padding-bottom:4px;">Technical Interview Matrix</h4>
+                    <video controls style="width:100%; height:120px; background:#000; border-radius:4px;" poster="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&auto=format&fit=crop&q=60"><source src="https://www.w3schools.com/html/movie.mp4" type="video/mp4"></video>
+                    <h5 style="font-size:10px; text-transform:uppercase; color:#475569; margin:10px 0 4px 0;">Tech Stack Code Analysis</h5>
+                    <div class="vector-graph-container">
+                        <div class="vector-graph-bar" style="height:92%;" data-label="Logic"></div>
+                        <div class="vector-graph-bar" style="height:84%; background:#3b82f6;" data-label="Stack"></div>
+                        <div class="vector-graph-bar" style="height:88%; background:#f59e0b;" data-label="Arch"></div>
+                    </div>
+                    <div style="font-size:11px; color:#475569; margin-top:10px; line-height:1.4;" id="mdSchedulerDetailsText"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 6: UNIVERSAL EDIT REMARKS OVERLAY -->
+    <div class="modal-overlay" id="generalRemarksModalOverlay">
+        <div class="modal-card" style="max-width: 440px;">
+            <h2 class="modal-header">Edit Administrative Remarks</h2>
+            <textarea id="generalRemarksInput" class="form-control textarea-body" placeholder="Add candidate diagnostic notes..."></textarea>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="closeGeneralRemarksModal()">Cancel</button>
+                <button type="button" class="btn-submit" onclick="saveGeneralRemarks()">Save Remarks</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- MASTER TRANSLATION PIPELINE CORE ENGINE SCRIPTS --- -->
+    <script>
+        let globalDepartmentPanellistMatrix = {
+            "Tech and Delivery": [{ name: "Gaurav Paliwal", desig: "Group Manager" }, { name: "Arpit Pathak", desig: "Manager" }],
+            "Operations": [], "HR": [], "Finance": [], "Sales": []
+        };
+
+        const qaScriptMatrix = {
+            1: { q: "Walk us through your target experience models?", a: "I route structured services across decoupled cluster setups seamlessly." },
+            2: { q: "How do you manage resource allocation bottleneck choices?", a: "By running analytical profiling sweeps inside core evaluation filters dynamically." },
+            3: { q: "Detail your exception interception roadmap architecture configurations.", a: "Enforcing unified global try-catch routines routes anomalies out of production pipelines safely." },
+            4: { q: "What metrics do you track to maintain platform load stability parameters?", a: "Traversals monitoring, baseline indexing latencies, and thread capacity ceilings are audited sequentially." },
+            5: { q: "How do you handle geo-distributed synchronization replication limits?", a: "Allocating memory storage rings isolates localized lookups down to constant time boundaries." },
+            6: { q: "Explain your multi-tier state orchestration parameters.", a: "We decouple persistent state arrays out of execution contexts to safeguard agility indices completely." },
+            7: { q: "What testing methodologies do you enforce across distributed nodes?", a: "Mock validation scripts sweep connection lanes completely before staging logs merge back." },
+            8: { q: "Describe your configuration optimization parameters.", a: "Whitelisting matrices are externalized out of core engine builds to restrict horizontal attack planes natively." }
+        };
+
+        // Real identity candidates injected securely into central tracking arrays
+        let centralStatePipelineArray = [
+            { id: "A", name: "Rehan Raza", dept: "Tech and Delivery", track: "Backend Core", stage: "screening", inviteStatus: "Invite Not Sent", invitedDate: "2026-06-10", completedDate: "—", remarks: "Resume parsed accurately. Ready for evaluation.", status: "Active", scores: { screening: 0, mcq: 0, tech: 0, hr: 0 }, schedule: "—", panellists: "—" },
+            { id: "B", name: "Gargi Sharma", dept: "Operations", track: "Logistics Agility", stage: "screening", inviteStatus: "Invite Not Sent", invitedDate: "2026-06-10", completedDate: "—", remarks: "Operations management candidate profile.", status: "Active", scores: { screening: 0, mcq: 0, tech: 0, hr: 0 }, schedule: "—", panellists: "—" },
+            { id: "C", name: "Hitesh Suthar", dept: "HR", track: "Talent Acquisition", stage: "screening", inviteStatus: "Invite Not Sent", invitedDate: "2026-06-10", completedDate: "—", remarks: "High communication metrics verified on resume.", status: "Active", scores: { screening: 0, mcq: 0, tech: 0, hr: 0 }, schedule: "—", panellists: "—" },
+            { id: "D", name: "Aditya Chhipa", dept: "Finance", track: "Risk Auditing", stage: "screening", inviteStatus: "Invite Not Sent", invitedDate: "2026-06-10", completedDate: "—", remarks: "Structural systems auditor expert background.", status: "Active", scores: { screening: 0, mcq: 0, tech: 0, hr: 0 }, schedule: "—", panellists: "—" },
+            { id: "E", name: "Harsh Solanki", dept: "Sales", track: "Account Management", stage: "screening", inviteStatus: "Invite Not Sent", invitedDate: "2026-06-10", completedDate: "—", remarks: "Enterprise client portfolio experience noted.", status: "Active", scores: { screening: 0, mcq: 0, tech: 0, hr: 0 }, schedule: "—", panellists: "—" }
+        ];
+
+        let activeSubViewTabContext = "screening";
+        let targetedCandidateIndexRef = null;
+        let intendedNextStateTransition = null;
+
+        // Dynamic helper to build decreasing menu selections based on current pipeline progression
+        function getActionOptions(stage, inviteStatus) {
+            let opts = `<option value="" disabled selected>Manage Action</option>`;
+            opts += `<option value="edit-remarks" style="color:#0f766e; font-weight:600;">Edit Remarks</option>`;
+            
+            if (stage === 'screening') {
+                if (inviteStatus !== 'Completed') {
+                    opts += `<option value="send-video">Send Video Bot Invite</option>`;
+                    opts += `<option value="mark-screening-comp">Mark Screening Comp.</option>`;
+                } else {
+                    opts += `<option value="view-rec">Review Recording</option>`;
+                }
+                opts += `<option value="advance-mcq" style="font-weight:700;">Send MCQ Invite &rarr;</option>`;
+                opts += `<option value="advance-tech" style="font-weight:700;">Book Tech Slot &rarr;</option>`;
+                opts += `<option value="advance-hr" style="font-weight:700;">Send HR Invite &rarr;</option>`;
+            } 
+            else if (stage === 'mcq') {
+                if (inviteStatus !== 'Completed') {
+                    opts += `<option value="advance-mcq">Resend MCQ Invite</option>`;
+                    opts += `<option value="mark-mcq-comp">Mark MCQ Comp.</option>`;
+                }
+                opts += `<option value="advance-tech" style="font-weight:700;">Book Tech Slot &rarr;</option>`;
+                opts += `<option value="advance-hr" style="font-weight:700;">Send HR Invite &rarr;</option>`;
+            } 
+            else if (stage === 'tech') {
+                if (inviteStatus !== 'Completed') {
+                    opts += `<option value="advance-tech">Book / Reschedule Slot</option>`;
+                    opts += `<option value="mark-tech-comp">Mark Tech Comp.</option>`;
+                }
+                opts += `<option value="advance-hr" style="font-weight:700;">Send HR Invite &rarr;</option>`;
+            } 
+            else if (stage === 'hr') {
+                if (inviteStatus !== 'Completed') {
+                    opts += `<option value="advance-hr">Resend HR Invite</option>`;
+                    opts += `<option value="mark-hr-comp">Mark HR Comp.</option>`;
+                }
+            }
+            
+            opts += `<option value="archive-all" style="color:#4338ca; font-weight:700;">Archive to Master Report</option>`;
+            opts += `<option value="delete" class="danger-option">Delete Candidate</option>`;
+            return opts;
+        }
+
+        function runMasterPipelineTableRenderer() {
+            const thead = document.getElementById('pipelineTheadBlock');
+            const tbody = document.getElementById('pipelineTbodyBlock');
+            const emptyState = document.getElementById('pipelineEmptyStateState');
+            
+            tbody.innerHTML = "";
+            let filteredRoster = centralStatePipelineArray.filter(c => c.stage === activeSubViewTabContext);
+            
+            document.getElementById('badge-screening').innerText = centralStatePipelineArray.filter(c => c.stage === 'screening').length;
+            document.getElementById('badge-mcq').innerText = centralStatePipelineArray.filter(c => c.stage === 'mcq').length;
+            document.getElementById('badge-tech').innerText = centralStatePipelineArray.filter(c => c.stage === 'tech').length;
+            document.getElementById('badge-hr').innerText = centralStatePipelineArray.filter(c => c.stage === 'hr').length;
+            document.getElementById('badge-all').innerText = centralStatePipelineArray.filter(c => c.stage === 'all').length;
+
+            if(filteredRoster.length === 0) {
+                thead.innerHTML = "";
+                emptyState.style.display = "block";
+                return;
+            }
+            emptyState.style.display = "none";
+
+            if(activeSubViewTabContext === "screening") {
+                thead.innerHTML = `<tr><th class="grid-layout-th" style="width:20%;">Candidate Name</th><th class="grid-layout-th" style="width:15%;">Sub Dept</th><th class="grid-layout-th" style="width:15%;">Date Invited</th><th class="grid-layout-th" style="width:15%;">Date Completed</th><th class="grid-layout-th" style="width:18%;">Screening Status</th><th class="grid-layout-th" style="width:17%; text-align:right; padding-right:24px;">Action Pipeline</th></tr>`;
+                filteredRoster.forEach(c => {
+                    const actionMenu = `<select class="action-dropdown" onchange="routeActionDropdownContext(this, '${c.id}')">${getActionOptions(c.stage, c.inviteStatus)}</select>`;
+                    tbody.innerHTML += `<tr class="candidate-row"><td><strong>${c.name}</strong><div style="font-size:11px; color:#64748b;">${c.dept}</div></td><td>${c.track}</td><td><span class="timestamp-txt">${c.invitedDate}</span></td><td><span class="timestamp-txt">${c.completedDate}</span></td><td><span class="stage-tag screening">${c.inviteStatus}</span></td><td style="text-align:right; padding-right:24px;">${actionMenu}</td></tr>`;
+                });
+            }
+            else if (activeSubViewTabContext === "mcq") {
+                thead.innerHTML = `<tr><th class="grid-layout-th" style="width:25%;">Candidate Name</th><th class="grid-layout-th" style="width:20%;">Sub Dept</th><th class="grid-layout-th" style="width:20%;">MCQ Evaluation State</th><th class="grid-layout-th" style="width:15%;">Score Metric</th><th class="grid-layout-th" style="width:20%; text-align:right; padding-right:24px;">Action Pipeline</th></tr>`;
+                filteredRoster.forEach(c => {
+                    const actionMenu = `<select class="action-dropdown" onchange="routeActionDropdownContext(this, '${c.id}')">${getActionOptions(c.stage, c.inviteStatus)}</select>`;
+                    tbody.innerHTML += `<tr class="candidate-row"><td><strong>${c.name}</strong><div style="font-size:11px; color:#64748b;">${c.dept}</div></td><td>${c.track}</td><td><span class="stage-tag advanced">${c.inviteStatus}</span></td><td><strong style="font-family:monospace; color:#2563eb;">${c.scores.mcq ? c.scores.mcq + '%' : '—'}</strong></td><td style="text-align:right; padding-right:24px;">${actionMenu}</td></tr>`;
+                });
+            }
+            else if (activeSubViewTabContext === "tech") {
+                thead.innerHTML = `<tr><th class="grid-layout-th" style="width:22%;">Candidate Name</th><th class="grid-layout-th" style="width:22%;">Assigned Panellists</th><th class="grid-layout-th" style="width:32%;">Schedule & Assets Detail</th><th class="grid-layout-th" style="width:10%;">Status</th><th class="grid-layout-th" style="width:14%; text-align:right; padding-right:24px;">Action Pipeline</th></tr>`;
+                filteredRoster.forEach(c => {
+                    const actionMenu = `<select class="action-dropdown" onchange="routeActionDropdownContext(this, '${c.id}')">${getActionOptions(c.stage, c.inviteStatus)}</select>`;
+                    let scheduleText = `<span style="color:#94a3b8; font-style:italic; font-size:12px;">Awaiting Schedule Assignment (Assets Unavailable)</span>`;
+                    
+                    if(c.inviteStatus === "Scheduled") {
+                        scheduleText = `<span class="timestamp-txt">${c.schedule}</span>`;
+                    } else if (c.inviteStatus === "Completed") {
+                        scheduleText = `<div class="timestamp-txt" style="margin-bottom:2px;">${c.schedule}</div><span class="asset-link-active" onclick="alert('Launching Tech Recording Chunks Verification Sync...')">🎥 Tech Recording</span>`;
+                    }
+                    tbody.innerHTML += `<tr class="candidate-row"><td><strong>${c.name}</strong><div style="font-size:11px; color:#64748b;">${c.dept}</div></td><td><span style="font-size:12.5px;">${c.panellists}</span></td><td>${scheduleText}</td><td><span class="stage-tag completed">${c.inviteStatus}</span></td><td style="text-align:right; padding-right:24px;">${actionMenu}</td></tr>`;
+                });
+            }
+            else if (activeSubViewTabContext === "hr") {
+                thead.innerHTML = `<tr><th class="grid-layout-th" style="width:25%;">Candidate Name</th><th class="grid-layout-th" style="width:20%;">Sub Dept</th><th class="grid-layout-th" style="width:20%;">HR Round Status</th><th class="grid-layout-th" style="width:15%;">HR Sync Index</th><th class="grid-layout-th" style="width:20%; text-align:right; padding-right:24px;">Action Pipeline</th></tr>`;
+                filteredRoster.forEach(c => {
+                    const actionMenu = `<select class="action-dropdown" onchange="routeActionDropdownContext(this, '${c.id}')">${getActionOptions(c.stage, c.inviteStatus)}</select>`;
+                    tbody.innerHTML += `<tr class="candidate-row"><td><strong>${c.name}</strong><div style="font-size:11px; color:#64748b;">${c.dept}</div></td><td>${c.track}</td><td><span class="stage-tag screening">${c.inviteStatus}</span></td><td><strong style="font-family:monospace; color:#f59e0b;">${c.scores.hr ? c.scores.hr + '%' : '—'}</strong></td><td style="text-align:right; padding-right:24px;">${actionMenu}</td></tr>`;
+                });
+            }
+            else if (activeSubViewTabContext === "all") {
+                thead.innerHTML = `<tr><th class="grid-layout-th" style="width:18%;">Date Added</th><th class="grid-layout-th" style="width:22%;">Candidate Name</th><th class="grid-layout-th" style="width:22%;">Sub Dept Spec</th><th class="grid-layout-th" style="width:18%;">Admin State</th><th class="grid-layout-th" style="width:20%; text-align:right; padding-right:24px;">Comprehensive File</th></tr>`;
+                filteredRoster.forEach(c => {
+                    tbody.innerHTML += `<tr class="candidate-row"><td><span class="timestamp-txt">2026-06-10</span></td><td><strong>${c.name}</strong><div style="font-size:11px; color:#64748b;">${c.dept}</div></td><td>${c.track}</td><td><div class="status-select-wrapper"><select class="grid-status-dropdown status-active" onchange="updateRowStatusStyle(this)"><option value="Active">Active</option><option value="On Hold">On Hold</option><option value="Rejected">Rejected</option><option value="Hired">Hired</option><option value="Withdrawn">Withdrawn</option></select></div></td><td style="text-align:right; padding-right:24px;"><button class="btn-submit" style="background:#7c3aed; padding:4px 10px; font-size:11px; margin-right:6px;" onclick="launchMasterDossierModal('${c.id}')">Review Report</button><button class="btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="openGeneralRemarksModal('${c.id}')">Edit Remarks</button></td></tr>`;
+                });
+            }
+        }
+
+        function switchActivePipelineStageView(targetTabContext) {
+            document.querySelectorAll('.sub-nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${targetTabContext}`).classList.add('active');
+            activeSubViewTabContext = targetTabContext;
+            runMasterPipelineTableRenderer();
+        }
+
+        function updateRowStatusStyle(selectEl) {
+            selectEl.classList.remove('status-active', 'status-onhold', 'status-rejected', 'status-hired', 'status-withdrawn');
+            const val = selectEl.value;
+            if (val === 'Active') selectEl.classList.add('status-active');
+            else if (val === 'On Hold') selectEl.classList.add('status-onhold');
+            else if (val === 'Rejected') selectEl.classList.add('status-rejected');
+            else if (val === 'Hired') selectEl.classList.add('status-hired');
+            else if (val === 'Withdrawn') selectEl.classList.add('status-withdrawn');
+        }
+
+        // --- PIPELINE ACTION DECISION ROUTER ENGINE ---
+        function routeActionDropdownContext(selectEl, uid) {
+            const act = selectEl.value;
+            const record = centralStatePipelineArray.find(c => c.id === uid);
+            if(!record) return;
+
+            targetedCandidateIndexRef = uid;
+
+            if (act === "edit-remarks") {
+                openGeneralRemarksModal(uid);
+            }
+            else if (act === "send-video") {
+                intendedNextStateTransition = 'screening';
+                document.getElementById('inviteModalTitleText').innerText = `Video Bot AI screening Invitation: ${record.name}`;
+                document.getElementById('inviteTargetEmail').value = `${record.name.toLowerCase().replace(/\s+/g, '.')}@example.com`;
+                document.getElementById('inviteSubject').value = "Action Required: Complete your Video AI Screening with ElastiCrew";
+                document.getElementById('inviteBody').value = `Hi ${record.name},\n\nPlease complete your conversational automated assessment loop by processing connection indicators inside your candidate workspace platform.`;
+                document.getElementById('inviteSubmitActionLabel').innerText = "Dispatch Bot Link";
+                document.getElementById('dispatchInviteModalOverlay').classList.add('active');
+            } 
+            else if (act === "advance-mcq") {
+                intendedNextStateTransition = 'mcq';
+                document.getElementById('inviteModalTitleText').innerText = `MCQ Objective Evaluation Ingestion: ${record.name}`;
+                document.getElementById('inviteTargetEmail').value = `${record.name.toLowerCase().replace(/\s+/g, '.')}@example.com`;
+                document.getElementById('inviteSubject').value = "Hiring Framework Notification: MCQ Technical Assessment Link Enclosed";
+                document.getElementById('inviteBody').value = `Hi ${record.name},\n\nYou have successfully passed our Video screening round. Please complete the attached algorithmic and testing selection questionnaire files.`;
+                document.getElementById('inviteSubmitActionLabel').innerText = "Send MCQ Invite";
+                document.getElementById('dispatchInviteModalOverlay').classList.add('active');
+            }
+            else if (act === "advance-tech") {
+                intendedNextStateTransition = 'tech';
+                triggerTechBookingDrawer(uid, record.dept);
+            }
+            else if (act === "advance-hr") {
+                intendedNextStateTransition = 'hr';
+                document.getElementById('inviteModalTitleText').innerText = `HR Evaluation Alignment: ${record.name}`;
+                document.getElementById('inviteTargetEmail').value = `${record.name.toLowerCase().replace(/\s+/g, '.')}@example.com`;
+                document.getElementById('inviteSubject').value = "ElastiCrew Scheduling Update: Final HR Round Interview Slot Parameters";
+                document.getElementById('inviteBody').value = `Hi ${record.name},\n\nWe have scheduled your core leadership alignment panel discussion session. Connection parameters follow below.`;
+                document.getElementById('inviteSubmitActionLabel').innerText = "Send HR Round Invite";
+                document.getElementById('dispatchInviteModalOverlay').classList.add('active');
+            }
+            else if (act === "mark-screening-comp" || act === "mark-mcq-comp" || act === "mark-tech-comp" || act === "mark-hr-comp") {
+                simulateManualCompletion(uid, act);
+            }
+            else if (act === "archive-all") {
+                record.stage = "all";
+                runMasterPipelineTableRenderer();
+            }
+            else if (act === "view-rec") {
+                launchRecordingPlayerModal(record.name);
+            }
+            else if (act === "delete") {
+                if(confirm("Completely remove profile parameter logs from state dictionaries?")) {
+                    centralStatePipelineArray = centralStatePipelineArray.filter(c => c.id !== uid);
+                    runMasterPipelineTableRenderer();
+                }
+            }
+            selectEl.value = "";
+        }
+
+        // Dedicated Universal Remarks Module Launch
+        function openGeneralRemarksModal(uid) {
+            targetedCandidateIndexRef = uid;
+            const record = centralStatePipelineArray.find(c => c.id === uid);
+            document.getElementById('generalRemarksInput').value = record.remarks || "";
+            document.getElementById('generalRemarksModalOverlay').classList.add('active');
+        }
+        function closeGeneralRemarksModal() { document.getElementById('generalRemarksModalOverlay').classList.remove('active'); targetedCandidateIndexRef = null; }
+        
+        function saveGeneralRemarks() {
+            const record = centralStatePipelineArray.find(c => c.id === targetedCandidateIndexRef);
+            if(record) {
+                record.remarks = document.getElementById('generalRemarksInput').value.trim();
+                alert(`Remarks safely cached for ${record.name}.`);
+                closeGeneralRemarksModal();
+            }
+        }
+
+        function openAddCandidateModal() { document.getElementById('addCandidateModalOverlay').classList.add('active'); }
+        function closeAddCandidateModal() { document.getElementById('addCandidateModalOverlay').classList.remove('active'); document.getElementById('addCandidateForm').reset(); }
+        
+        function executeCandidateIngestionPipeline(e) {
+            e.preventDefault();
+            const name = document.getElementById('newCandName').value.trim();
+            const dept = document.getElementById('newCandDept').value;
+            const track = document.getElementById('newCandTrack').value.trim();
+            
+            const computedId = String.fromCharCode(65 + centralStatePipelineArray.length);
+            centralStatePipelineArray.push({ id: computedId, name, dept, track, stage: "screening", inviteStatus: "Invite Not Sent", invitedDate: "2026-06-10", completedDate: "—", remarks: "", status: "Active", scores: { screening: 0, mcq: 0, tech: 0, hr: 0 }, schedule: "—", panellists: "—" });
+            
+            closeAddCandidateModal();
+            switchActivePipelineStageView('screening');
+        }
+
+        function closeDispatchInviteModal() { document.getElementById('dispatchInviteModalOverlay').classList.remove('active'); targetedCandidateIndexRef = null; intendedNextStateTransition = null; }
+        
+        function executeStateTransitionEvent(e) {
+            e.preventDefault();
+            const record = centralStatePipelineArray.find(c => c.id === targetedCandidateIndexRef);
+            if(!record) return;
+
+            // Direct jumping pipelines structurally
+            if (intendedNextStateTransition) {
+                record.stage = intendedNextStateTransition;
+                if(intendedNextStateTransition === 'screening') record.inviteStatus = "Invite Dispatched";
+                if(intendedNextStateTransition === 'mcq') record.inviteStatus = "Assessment Pending";
+                if(intendedNextStateTransition === 'hr') record.inviteStatus = "Panel Scheduled";
+            }
+
+            closeDispatchInviteModal();
+            if(intendedNextStateTransition) switchActivePipelineStageView(intendedNextStateTransition);
+            else runMasterPipelineTableRenderer();
+        }
+
+        function simulateManualCompletion(uid, actionTag) {
+            const record = centralStatePipelineArray.find(c => c.id === uid);
+            if(!record) return;
+
+            if(actionTag === "mark-screening-comp") {
+                record.inviteStatus = "Completed";
+                record.completedDate = "2026-06-10";
+                record.scores.screening = 84;
+            } else if (actionTag === "mark-mcq-comp") {
+                record.inviteStatus = "Completed";
+                record.scores.mcq = 78;
+            } else if (actionTag === "mark-tech-comp") {
+                record.inviteStatus = "Completed";
+                record.scores.tech = 92;
+            } else if (actionTag === "mark-hr-comp") {
+                record.inviteStatus = "Completed";
+                record.scores.hr = 88;
+            }
+            runMasterPipelineTableRenderer();
+        }
+
+        function triggerTechBookingDrawer(uid, candidateDept) {
+            targetedCandidateIndexRef = uid;
+            const record = centralStatePipelineArray.find(c => c.id === uid);
+            
+            document.getElementById('tsDisplayCandName').value = record.name;
+            document.getElementById('tsPanellistTrackLabel').innerText = `Filter Active: Registered Panellists inside ${candidateDept}:`;
+
+            const container = document.getElementById('tsCheckboxContainer');
+            container.innerHTML = "";
+            const activePool = globalDepartmentPanellistMatrix[candidateDept] || [];
+
+            if(activePool.length === 0) {
+                container.innerHTML = `<div style="font-size:12px; color:#ef4444; font-style:italic;">No registered panellists correspond to the ${candidateDept} track configuration. Add them via the department chips layout above to unlock booking.</div>`;
+            } else {
+                activePool.forEach(p => {
+                    container.innerHTML += `<label class="checkbox-item"><input type="checkbox" name="tsSelectedCheckboxes" value="${p.name}|${p.desig}"><span><strong>${p.name}</strong> (${p.desig})</span></label>`;
+                });
+            }
+            document.getElementById('techSchedulerBookingModalOverlay').classList.add('active');
+        }
+
+        function closeTechBookingModal() { document.getElementById('techSchedulerBookingModalOverlay').classList.remove('active'); targetedCandidateIndexRef = null; }
+        
+        function executeTechBookingStateTransition(e) {
+            e.preventDefault();
+            const record = centralStatePipelineArray.find(c => c.id === targetedCandidateIndexRef);
+            const checkboxes = document.querySelectorAll('input[name="tsSelectedCheckboxes"]:checked');
+
+            if(checkboxes.length === 0) { alert("Please allocate a panel member."); return; }
+            
+            let pStr = "";
+            checkboxes.forEach(box => {
+                const [pName, pDesig] = box.value.split('|');
+                pStr += `${pName} (${pDesig}), `;
+            });
+            pStr = pStr.substring(0, pStr.length - 2);
+
+            const duration = document.getElementById('tsDuration').value;
+            const rawDate = document.getElementById('tsDate').value;
+            const rawTime = document.getElementById('tsTime').value;
+
+            const dateObj = new Date(rawDate);
+            const formattedDate = `${String(dateObj.getDate()).padStart(2,'0')} ${dateObj.toLocaleDateString('en-US',{month:'short'})} ${String(dateObj.getFullYear()).substring(2)}`;
+            const [h, m] = rawTime.split(':');
+            const formattedTime = `${h % 12 || 12}:${m} ${h >= 12 ? 'PM':'AM'}`;
+
+            record.panellists = pStr;
+            record.schedule = `${formattedDate} - ${formattedTime} (${duration})`;
+            record.inviteStatus = "Scheduled";
+            
+            // Advance directly into tech state tab view
+            record.stage = 'tech';
+            closeTechBookingModal();
+            switchActivePipelineStageView('tech');
+        }
+
+        // --- 60% MEDIA PLAYER VIEWER POPUPS ENGINE ---
+        function launchRecordingPlayerModal(cname) {
+            document.getElementById('modalCandLabel').innerText = `Screening Review: ${cname}`;
+            swapModalPlaybackNode(1);
+            document.getElementById('recordingPlayerModal').classList.add('active');
+        }
+        function toggleRecordingModal() {
+            const p = document.getElementById('recordingPlayerModal'); p.classList.remove('active');
+            document.getElementById('modalVideoPlayer').pause();
+        }
+        function swapModalPlaybackNode(qidx) {
+            document.querySelectorAll('.modal-q-node').forEach(n => n.classList.remove('active-q'));
+            const nodes = document.querySelectorAll('.modal-q-node');
+            if(nodes[qidx-1]) nodes[qidx-1].classList.add('active-q');
+
+            document.getElementById('modalQuestionIndexLabel').innerText = `Question ${qidx} Segment Logged`;
+            document.getElementById('modalQuestionString').innerText = `"${qaScriptMatrix[qidx].q}"`;
+            document.getElementById('modalAnswerString').innerText = `"${qaScriptMatrix[qidx].a}"`;
+        }
+
+        // --- GLOBAL REVIEWS DOSSIER PREVIEW REPORT ENGINE ---
+        function launchMasterDossierModal(uid) {
+            const record = centralStatePipelineArray.find(c => c.id === uid);
+            if(!record) return;
+
+            document.getElementById('mdCandidateName').innerText = record.name;
+            document.getElementById('mdCandidateTrack').innerText = `${record.dept} — ${record.track}`;
+            document.getElementById('mdAdminStatusText').innerText = record.status.toUpperCase();
+            document.getElementById('mdRemarksText').innerText = record.remarks || "No supplementary administrative context remarks logged inside this dossier file.";
+            document.getElementById('mdSchedulerDetailsText').innerText = `Assigned Panel: ${record.panellists}\nVerified Round Parameters: ${record.schedule}`;
+
+            document.getElementById('mdScoreScreening').innerText = record.scores.screening ? record.scores.screening + '%' : '100%';
+            document.getElementById('mdFillScreening').style.width = record.scores.screening ? record.scores.screening + '%' : '100%';
+            
+            document.getElementById('mdScoreMcq').innerText = record.scores.mcq ? record.scores.mcq + '%' : '0%';
+            document.getElementById('mdFillMcq').style.width = record.scores.mcq ? record.scores.mcq + '%' : '0%';
+
+            document.getElementById('mdScoreTech').innerText = record.scores.tech ? record.scores.tech + '%' : '0%';
+            document.getElementById('mdFillTech').style.width = record.scores.tech ? record.scores.tech + '%' : '0%';
+
+            document.getElementById('mdScoreHr').innerText = record.scores.hr ? record.scores.hr + '%' : '0%';
+            document.getElementById('mdFillHr').style.width = record.scores.hr ? record.scores.hr + '%' : '0%';
+
+            document.getElementById('masterDossierArchiveModal').classList.add('active');
+        }
+        function closeMasterDossierModal() { document.getElementById('masterDossierArchiveModal').classList.remove('active'); }
+
+        // Boot Init Call
+        runMasterPipelineTableRenderer();
+    </script>
+</body>
+</html>
